@@ -75,7 +75,7 @@ function findListID(name) {
  * @return number|undefined
  */
 function getCardIDFromCommit(commit) {
-  const regex = /TR#(\d+)/;
+  const regex = /TR(\d+)/;
   const match = commit.match(regex);
 
   if (match && match.length > 1) {
