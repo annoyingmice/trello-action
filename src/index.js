@@ -8,12 +8,12 @@ const trello = `https://api.trello.com/1`;
 let lists = [];
 
 // Declare all inputs
-// const trToken = core.getInput(`tr-token`, { required: true }); // trello auth token
-// const trKey = core.getInput(`tr-key`, { required: true }); // trello api key
-// const trBoard = core.getInput(`tr-board`, { required: true }); // trello board ID
-// const trAction = core.getInput(`tr-action`, { required: true }); // trello actions ["comment", "attach", "move"]
-// const trMoveTo = core.getInput(`tr-move-to`) || undefined; // List name e.g ["To do", "Blocked", "Rework", "Progress", "QA", "Done"]
-// const commit = core.getInput(`commit`, { required: true }); // github commit message
+const trToken = core.getInput(`tr-token`, { required: true }); // trello auth token
+const trKey = core.getInput(`tr-key`, { required: true }); // trello api key
+const trBoard = core.getInput(`tr-board`, { required: true }); // trello board ID
+const trAction = core.getInput(`tr-action`, { required: true }); // trello actions ["comment", "attach", "move"]
+const trMoveTo = core.getInput(`tr-move-to`) || undefined; // List name e.g ["To do", "Blocked", "Rework", "Progress", "QA", "Done"]
+const commit = core.getInput(`commit`, { required: true }); // github commit message
 const ExceptionCardNotdFound = `No card ID was found. Please follow this commit format "[<#card>] (branch) <type>(optional): <message>".`;
 const ExceptionListNotFound = `No list ID was found. Please make sure you provided the correct list name case sensitive.`;
 
@@ -167,12 +167,11 @@ async function handleCommit(data) {
 
 async function run() {
   // Make sure to always load the lists first
-  // await getBoardList(trBoard);
-  // if (head_commit) {
-  //   // Run to handle commit
-  //   await handleCommit(head_commit);
-  // }
-  console.log(getCardIDFromCommit("TR1 feature/jwt feat: test"));
+  await getBoardList(trBoard);
+  if (head_commit) {
+    // Run to handle commit
+    await handleCommit(head_commit);
+  }
 }
 
 run();
