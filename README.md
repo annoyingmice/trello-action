@@ -34,7 +34,6 @@ jobs:
           with:
             tr-token: xxx # Trello auth token, visit https://trello.com/app-key
             tr-key: xxx # Trello api key, visit https://trello.com/app-key
-            tr-card: xxx # Trello card ID, usual pattern "#1" to view card id install power-up "Card Numbers by Reenhanced" to expose card/id "#1"
             tr-board: xxx # Trello board ID
             tr-action: xxx # Trello card action, an array of the following ["comment", "attach", "move"] or a single action e.g "comment, attach" or "attach"
             tr-move-to: xxx # Trello list name one of the follow depends what list was defined in your trello ["To do", "Blocked", "Rework", "Progress", "QA", "Done"] (Optional)
