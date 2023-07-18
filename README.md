@@ -16,7 +16,8 @@ npm install
 ```
 
 ## Usage
-In github workflow file .yml
+In github workflow file .yml   
+Note: Please follow commit format ```[<#card>] (branch) <type>(optional): <message>```
 ```yml
 name: Trello action
 on:
