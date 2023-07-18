@@ -16,8 +16,11 @@ npm install
 ```
 
 ## Usage
-In github workflow file .yml   
-Note: Please follow commit format ```[<#card>] (branch) <type>(optional): <message>```
+Install/Enable trello power-up's in your trello board ```Github, Card Numbers by Reenhanced```   
+<br/>
+In github workflow file <code>.yml</code>
+<br/>
+Note: Please follow commit format ```TR<ID> (branch) <type>(optional): <message>```
 ```yml
 name: Trello action
 on:
