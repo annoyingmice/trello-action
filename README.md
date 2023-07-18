@@ -17,6 +17,9 @@ npm install
 
 ## Usage
 Install/Enable trello power-up's in your trello board ```Github, Card Numbers by Reenhanced```   
+![power-up's](./public/images/1.png)
+![card ID](./public/images/2.png)
+![github history](./public/images/3.png)
 <br/>
 In github workflow file <code>.yml</code>
 <br/>
@@ -38,7 +41,7 @@ jobs:
             tr-token: xxx # Trello auth token, visit https://trello.com/app-key
             tr-key: xxx # Trello api key, visit https://trello.com/app-key
             tr-board: xxx # Trello board ID
-            tr-action: xxx # Trello card action, an array of the following ["comment", "attach", "move"] or a single action e.g "comment, attach" or "attach"
+            tr-action: xxx # Trello card action, a list of the following ["comment", "attach", "move"] or a single action e.g "comment, attach" or "attach"
             tr-move-to: xxx # Trello list name one of the follow depends what list was defined in your trello ["To do", "Blocked", "Rework", "Progress", "QA", "Done"] (Optional)
             commit: ${{ github.event.head_commit.message }} # Github commit message or any message that can be attached to the trello card
 ```
