@@ -13,9 +13,6 @@ inputs:
   tr-key:
     description: Trello api key, visit https://trello.com/app-key
     required: true
-  tr-card:
-    description: Trello card ID, usual pattern "#1" to view card id install power-up "Card Numbers by Reenhanced" to expose card/id "#1"
-    required: true
   tr-board:
     description: Trello board ID
     required: true
