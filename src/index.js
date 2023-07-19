@@ -189,6 +189,7 @@ async function handlePull(data) {
       ...data,
       url: `https://github.com/${repository.owner.login}/${repository.name}/pull/${data.number}`,
     };
+    console.log(altered);
     const cardIDs = getCardIDFromCommit(altered.body);
     cardIDs.forEach(async (cardID) => {
       const card = await getCardFromBoard(trBoard, cardID);
