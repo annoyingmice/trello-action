@@ -16335,7 +16335,7 @@ const github = __nccwpck_require__(5438);
 
 const eventType = process.env.GITHUB_EVENT_NAME;
 const { context = {} } = github;
-const { head_commit, pull_request, repository, commit } = context.payload;
+const { head_commit, pull_request, repository } = context.payload;
 const trello = `https://api.trello.com/1`;
 let lists = [];
 
@@ -16492,8 +16492,7 @@ async function cardActions(action, data, card) {
  */
 async function handleCommit(data) {
   try {
-    const message = commit || pull_request.body;
-    const cardIDs = getCardIDFromCommit(message);
+    const cardIDs = getCardIDFromCommit(head_commit);
     cardIDs.forEach(async (cardID) => {
       const card = await getCardFromBoard(trBoard, cardID);
 
@@ -16521,8 +16520,8 @@ async function handlePull(data) {
       ...data,
       url: `https://github.com/${repository.owner.login}/${repository.name}/pull/${data.number}`,
     };
-    const message = commit || altered.body;
-    const cardIDs = getCardIDFromCommit(message);
+    console.log(altered);
+    const cardIDs = getCardIDFromCommit(altered.body);
     cardIDs.forEach(async (cardID) => {
       const card = await getCardFromBoard(trBoard, cardID);
 
