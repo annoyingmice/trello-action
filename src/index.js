@@ -141,7 +141,13 @@ async function cardActions(action, data, card) {
         url: data.url,
       });
     case "move":
-      if (trMoveTo || (trMoveTo && data.merged)) {
+      if  (eventType === `push` && trMoveTo) {
+        await fetch.put(`/cards/${card.id}`, {
+          idList: findListID(trMoveTo),
+        });
+      }
+
+      if (eventType === `pull_request` && (trMoveTo && data.merged)) {
         await fetch.put(`/cards/${card.id}`, {
           idList: findListID(trMoveTo),
         });
@@ -194,7 +200,7 @@ function handlePull(data) {
       }
 
       // By default attach action only allowed in pull request
-      condtions("attach").forEach((action) => cardActions(action, altered, card));
+      condtions(trAction).forEach((action) => cardActions(action, altered, card));
     })
 
     core.setOutput(`Success`, `Commit successfully attacked`);
@@ -206,12 +212,12 @@ function handlePull(data) {
 async function run() {
   // Make sure to always load the lists first
   await getBoardList(trBoard);
-  if (eventType === 'push') {
+  if (eventType === `push`) {
     // Run to handle commit
     await handleCommit(head_commit);
   }
 
-  if (eventType === 'pull_request') {
+  if (eventType === `pull_request`) {
     await handlePull(pull_request);
   }
 }
