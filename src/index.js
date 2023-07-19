@@ -161,6 +161,7 @@ async function cardActions(action, data, card) {
  */
 async function handleCommit(data) {
   try {
+    console.log(head_commit);
     const cardIDs = getCardIDFromCommit(head_commit);
     cardIDs.forEach(async (cardID) => {
       const card = await getCardFromBoard(trBoard, cardID);
