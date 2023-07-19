@@ -2,8 +2,9 @@ const axios = require("axios");
 const core = require(`@actions/core`);
 const github = require(`@actions/github`);
 
+const eventType = process.env.GITHUB_EVENT_NAME;
 const { context = {} } = github;
-const { head_commit } = context.payload;
+const { head_commit, pull_request, repository } = context.payload;
 const trello = `https://api.trello.com/1`;
 let lists = [];
 
@@ -13,7 +14,7 @@ const trKey = core.getInput(`tr-key`, { required: true }); // trello api key
 const trBoard = core.getInput(`tr-board`, { required: true }); // trello board ID
 const trAction = core.getInput(`tr-action`, { required: true }); // trello actions ["comment", "attach", "move"]
 const trMoveTo = core.getInput(`tr-move-to`) || undefined; // List name e.g ["To do", "Blocked", "Rework", "Progress", "QA", "Done"]
-const commit = core.getInput(`commit`, { required: true }); // github commit message
+const commit = core.getInput(`commit`) || undefined; // github commit message
 const ExceptionCardNotdFound = `No card ID was found. Please follow this commit format "[<#card>] (branch) <type>(optional): <message>".`;
 const ExceptionListNotFound = `No list ID was found. Please make sure you provided the correct list name case sensitive.`;
 
@@ -70,16 +71,20 @@ function findListID(name) {
 
 /**
  * Get the card id from commit message
- * Note: commit format should be followed "[<#card>] (branch) <type>(optional): <message>"
+ * Note: commit format should be followed "[TR<#card>] (branch) <type>(optional): <message>"
  * @param string commit
- * @return number|undefined
+ * @return number[]|undefined
  */
 function getCardIDFromCommit(commit) {
-  const regex = /TR(\d+)/;
+  if(!commit) {
+    core.setFailed(ExceptionCardNotdFound);
+  }
+
+  const regex = /\[(\w+\d+)\]/;
   const match = commit.match(regex);
 
-  if (match && match.length > 1) {
-    return match[1];
+  if (match && match[1]) {
+    return match[1].match(/\d+/g);
   } else {
     core.setFailed(ExceptionCardNotdFound);
   }
@@ -136,7 +141,7 @@ async function cardActions(action, data, card) {
         url: data.url,
       });
     case "move":
-      if (trMoveTo) {
+      if (trMoveTo || (trMoveTo && data.merged)) {
         await fetch.put(`/cards/${card.id}`, {
           idList: findListID(trMoveTo),
         });
@@ -151,13 +156,46 @@ async function cardActions(action, data, card) {
  */
 async function handleCommit(data) {
   try {
-    const card = await getCardFromBoard(trBoard, getCardIDFromCommit(commit));
+    const cardIDs = getCardIDFromCommit(commit);
+    cardIDs.forEach(cardID => {
+      const card = await getCardFromBoard(trBoard, cardID);
 
-    if (!card) {
-      core.setFailed(ExceptionCardNotdFound);
+      if (!card) {
+        core.setFailed(ExceptionCardNotdFound);
+      }
+
+      condtions(trAction).forEach((action) => cardActions(action, data, card));
+    })
+
+    core.setOutput(`Success`, `Commit successfully attacked`);
+  } catch (e) {
+    core.setFailed(e.message);
+  }
+}
+
+/**
+ * Handle pull_request
+ * @param object data
+ * @return void
+ */
+function handlePull(data) {
+  try {
+    const altered = { 
+      ...data, 
+      url: `https://github.com/${repository.owner.login}/${repository.name}/pull/${data.number}`
     }
 
-    condtions(trAction).forEach((action) => cardActions(action, data, card));
+    const cardIDs = getCardIDFromCommit(altered.body);
+    cardIDs.forEach(cardID => {
+      const card = await getCardFromBoard(trBoard, cardID);
+
+      if (!card) {
+        core.setFailed(ExceptionCardNotdFound);
+      }
+
+      // By default attach action only allowed in pull request
+      condtions("attach").forEach((action) => cardActions(action, altered, card));
+    })
 
     core.setOutput(`Success`, `Commit successfully attacked`);
   } catch (e) {
@@ -168,9 +206,13 @@ async function handleCommit(data) {
 async function run() {
   // Make sure to always load the lists first
   await getBoardList(trBoard);
-  if (head_commit) {
+  if (eventType === 'push') {
     // Run to handle commit
     await handleCommit(head_commit);
+  }
+
+  if (eventType === 'pull_request') {
+    await handlePull(pull_request);
   }
 }
 
