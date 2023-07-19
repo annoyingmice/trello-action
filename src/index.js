@@ -4,7 +4,7 @@ const github = require(`@actions/github`);
 
 const eventType = process.env.GITHUB_EVENT_NAME;
 const { context = {} } = github;
-const { head_commit, pull_request, repository } = context.payload;
+const { head_commit, pull_request, repository, commit} = context.payload;
 const trello = `https://api.trello.com/1`;
 let lists = [];
 
@@ -14,7 +14,6 @@ const trKey = core.getInput(`tr-key`, { required: true }); // trello api key
 const trBoard = core.getInput(`tr-board`, { required: true }); // trello board ID
 const trAction = core.getInput(`tr-action`, { required: true }); // trello actions ["comment", "attach", "move"]
 const trMoveTo = core.getInput(`tr-move-to`) || undefined; // List name e.g ["To do", "Blocked", "Rework", "Progress", "QA", "Done"]
-const commit = core.getInput(`commit`) || undefined; // github commit message
 const ExceptionCardNotdFound = `No card ID was found. Please follow this commit format "[<#card>] (branch) <type>(optional): <message>".`;
 const ExceptionListNotFound = `No list ID was found. Please make sure you provided the correct list name case sensitive.`;
 
@@ -162,7 +161,8 @@ async function cardActions(action, data, card) {
  */
 async function handleCommit(data) {
   try {
-    const cardIDs = getCardIDFromCommit(commit);
+    const message = commit || pull_request.body;
+    const cardIDs = getCardIDFromCommit(message);
     cardIDs.forEach(cardID => {
       const card = await getCardFromBoard(trBoard, cardID);
 
@@ -190,8 +190,8 @@ function handlePull(data) {
       ...data, 
       url: `https://github.com/${repository.owner.login}/${repository.name}/pull/${data.number}`
     }
-
-    const cardIDs = getCardIDFromCommit(altered.body);
+    const message = commit || altered.body;
+    const cardIDs = getCardIDFromCommit(message);
     cardIDs.forEach(cardID => {
       const card = await getCardFromBoard(trBoard, cardID);
 
