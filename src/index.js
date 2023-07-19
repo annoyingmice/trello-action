@@ -140,8 +140,7 @@ async function cardActions(action, data, card) {
         url: data.url,
       });
     case "move":
-      console.log(pull_request);
-      if (trMoveTo && pull_request?.merged) {
+      if (trMoveTo) {
         await fetch.put(`/cards/${card.id}`, {
           idList: findListID(trMoveTo),
         });
@@ -206,6 +205,7 @@ async function handlePull(data) {
 
 async function run() {
   // Make sure to always load the lists first
+  console.log(eventType);
   await getBoardList(trBoard);
   if (eventType === `push`) {
     // Run to handle commit
