@@ -140,8 +140,7 @@ async function cardActions(action, data, card) {
         url: data.url,
       });
     case "move":
-      console.log(pull_request);
-      if (trMoveTo && pull_request?.merged) {
+      if (trMoveTo) {
         await fetch.put(`/cards/${card.id}`, {
           idList: findListID(trMoveTo),
         });
