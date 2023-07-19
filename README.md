@@ -22,8 +22,6 @@ Install/Enable trello power-up's in your trello board ```Github, Card Numbers by
 ![github history](./public/images/3.png)
 <br/>
 In github workflow file <code>.yml</code>
-<br/>
-Note: Please follow commit format ```TR<ID> (branch) <type>(optional): <message>```
 ```yml
 name: Trello action
 on:
@@ -43,8 +41,10 @@ jobs:
             tr-board: xxx # Trello board ID
             tr-action: xxx # Trello card action, a list of the following ["comment", "attach", "move"] or a single action e.g "comment, attach" or "attach"
             tr-move-to: xxx # Trello list name one of the follow depends what list was defined in your trello ["To do", "Blocked", "Rework", "Progress", "QA", "Done"] (Optional)
-            commit: ${{ github.event.head_commit.message }} # Github commit message or any message that can be attached to the trello card
+            commit: ${{ github.event.head_commit.message }} # Github commit message or any message that can be attached to the trello card (Optional)
 ```
+<br/>
+Note: Please follow commit/comment(pull_request) format ```[TR<ID>, etc...] (branch) <type>(optional): <message>```
 
 ## Contributing
 

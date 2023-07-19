@@ -23,7 +23,6 @@ inputs:
     description: Trello list name one of the follow depends what list was defined in your trello ["To do", "Blocked", "Rework", "Progress", "QA", "Done"]
   commit:
     description: Github commit message or any message that can be attached to the trello card
-    required: true
 
 runs:
     using: node16
