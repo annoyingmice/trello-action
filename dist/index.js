@@ -16334,7 +16334,7 @@ const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 
 const eventType = process.env.GITHUB_EVENT_NAME;
-const { context = {} } = github;
+const { context = {}, event = {} } = github;
 const { head_commit, pull_request, repository } = context.payload;
 const trello = `https://api.trello.com/1`;
 let lists = [];
@@ -16471,13 +16471,7 @@ async function cardActions(action, data, card) {
         url: data.url,
       });
     case "move":
-      if (eventType === `push` && trMoveTo) {
-        await fetch.put(`/cards/${card.id}`, {
-          idList: findListID(trMoveTo),
-        });
-      }
-
-      if (eventType === `pull_request` && trMoveTo && data.merged) {
+      if (trMoveTo && event?.pull_request?.merged) {
         await fetch.put(`/cards/${card.id}`, {
           idList: findListID(trMoveTo),
         });
@@ -16520,7 +16514,6 @@ async function handlePull(data) {
       ...data,
       url: `https://github.com/${repository.owner.login}/${repository.name}/pull/${data.number}`,
     };
-    console.log(altered);
     const cardIDs = getCardIDFromCommit(altered.body);
     cardIDs.forEach(async (cardID) => {
       const card = await getCardFromBoard(trBoard, cardID);
