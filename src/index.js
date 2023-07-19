@@ -4,7 +4,7 @@ const github = require(`@actions/github`);
 
 const eventType = process.env.GITHUB_EVENT_NAME;
 const { context = {} } = github;
-const { head_commit, pull_request, repository, commit} = context.payload;
+const { head_commit, pull_request, repository, commit } = context.payload;
 const trello = `https://api.trello.com/1`;
 let lists = [];
 
@@ -75,7 +75,7 @@ function findListID(name) {
  * @return number[]|undefined
  */
 function getCardIDFromCommit(commit) {
-  if(!commit) {
+  if (!commit) {
     core.setFailed(ExceptionCardNotdFound);
   }
 
@@ -140,13 +140,13 @@ async function cardActions(action, data, card) {
         url: data.url,
       });
     case "move":
-      if  (eventType === `push` && trMoveTo) {
+      if (eventType === `push` && trMoveTo) {
         await fetch.put(`/cards/${card.id}`, {
           idList: findListID(trMoveTo),
         });
       }
 
-      if (eventType === `pull_request` && (trMoveTo && data.merged)) {
+      if (eventType === `pull_request` && trMoveTo && data.merged) {
         await fetch.put(`/cards/${card.id}`, {
           idList: findListID(trMoveTo),
         });
@@ -163,7 +163,7 @@ async function handleCommit(data) {
   try {
     const message = commit || pull_request.body;
     const cardIDs = getCardIDFromCommit(message);
-    cardIDs.forEach(cardID => {
+    cardIDs.forEach(async (cardID) => {
       const card = await getCardFromBoard(trBoard, cardID);
 
       if (!card) {
@@ -171,7 +171,7 @@ async function handleCommit(data) {
       }
 
       condtions(trAction).forEach((action) => cardActions(action, data, card));
-    })
+    });
 
     core.setOutput(`Success`, `Commit successfully attacked`);
   } catch (e) {
@@ -184,15 +184,15 @@ async function handleCommit(data) {
  * @param object data
  * @return void
  */
-function handlePull(data) {
+async function handlePull(data) {
   try {
-    const altered = { 
-      ...data, 
-      url: `https://github.com/${repository.owner.login}/${repository.name}/pull/${data.number}`
-    }
+    const altered = {
+      ...data,
+      url: `https://github.com/${repository.owner.login}/${repository.name}/pull/${data.number}`,
+    };
     const message = commit || altered.body;
     const cardIDs = getCardIDFromCommit(message);
-    cardIDs.forEach(cardID => {
+    cardIDs.forEach(async (cardID) => {
       const card = await getCardFromBoard(trBoard, cardID);
 
       if (!card) {
@@ -200,8 +200,10 @@ function handlePull(data) {
       }
 
       // By default attach action only allowed in pull request
-      condtions(trAction).forEach((action) => cardActions(action, altered, card));
-    })
+      condtions(trAction).forEach((action) =>
+        cardActions(action, altered, card)
+      );
+    });
 
     core.setOutput(`Success`, `Commit successfully attacked`);
   } catch (e) {
