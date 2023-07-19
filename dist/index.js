@@ -16536,7 +16536,6 @@ async function handlePull(data) {
 
 async function run() {
   // Make sure to always load the lists first
-  console.log(eventType);
   await getBoardList(trBoard);
   if (eventType === `push`) {
     // Run to handle commit
