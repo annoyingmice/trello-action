@@ -43,7 +43,7 @@ jobs:
             tr-move-to: xxx # Trello list name one of the follow depends what list was defined in your trello ["To do", "Blocked", "Rework", "Progress", "QA", "Done"] (Optional)
 ```
 <br/>
-Note: Please follow commit/comment(pull_request) format ```[<#card>] (branch) <type>(optional): <message>```
+Note: Please follow commit/comment(pull_request) format [<#card>] (branch) [type](optional): [message]
 
 ## Contributing
 
