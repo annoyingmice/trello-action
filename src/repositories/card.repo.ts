@@ -44,7 +44,7 @@ export const putCard = async (id: TrelloID, payload: Card.Params) =>
     );
 
 export const postCardAttachment = async (id: TrelloID, payload: Card.AttachMent) =>
-    await fetch.put(
+    await fetch.post(
         `/cards/${id}/attachments`,
         { 
             params: {
