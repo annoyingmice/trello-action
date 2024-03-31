@@ -1,9 +1,5 @@
 import axios from "axios";
-import * as core from "@actions/core"
-import * as github from "@actions/github"
-
-const trKey = "94435abbd4bd7fd4cc071160fcb7b87e" // core.getInput(`tr-key`, { required: true }); // trello api key
-const trToken = "ATTAfa551c260fc09fff3338d48ee801904ba91ba723b70baa400b27d5d9db481c625610FED6"// core.getInput(`tr-token`, { required: true }); // trello auth token
+import { TR_API_KEY, TR_API_TOKEN } from "./models";
 
 // Axios custom instance
 const fetch = axios.create({
@@ -21,8 +17,8 @@ fetch.interceptors.request.use(
     // Add your global parameters to the request config
     config.params = {
       ...config.params,
-      key: trKey,
-      token: trToken,
+      key: TR_API_KEY,
+      token: TR_API_TOKEN,
       // Add more parameters as needed
     };
 

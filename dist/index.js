@@ -11,8 +11,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
-const trKey = "94435abbd4bd7fd4cc071160fcb7b87e"; // core.getInput(`tr-key`, { required: true }); // trello api key
-const trToken = "ATTAfa551c260fc09fff3338d48ee801904ba91ba723b70baa400b27d5d9db481c625610FED6"; // core.getInput(`tr-token`, { required: true }); // trello auth token
+const models_1 = __nccwpck_require__(3513);
 // Axios custom instance
 const fetch = axios_1.default.create({
     baseURL: "https://api.trello.com/1",
@@ -25,7 +24,7 @@ const fetch = axios_1.default.create({
 // Interceptor always attach key, and token to the request
 fetch.interceptors.request.use((config) => {
     // Add your global parameters to the request config
-    config.params = Object.assign(Object.assign({}, config.params), { key: trKey, token: trToken });
+    config.params = Object.assign(Object.assign({}, config.params), { key: models_1.TR_API_KEY, token: models_1.TR_API_TOKEN });
     return config;
 }, (error) => {
     // Handle request error
