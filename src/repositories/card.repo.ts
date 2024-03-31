@@ -53,3 +53,16 @@ export const postCardAttachment = async (id: TrelloID, payload: Card.AttachMent)
             }
         }
     );
+
+export const postCardComment = async (id: TrelloID, payload: Card.AttachMent) =>
+    await fetch.post(
+        `/cards/${id}/actions/comments`,
+        { 
+            params: {
+                text: `
+                    ${payload.name} \n
+                    ${payload.url}
+                `
+            }
+        }
+    );

@@ -249,7 +249,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.postCardAttachment = exports.putCard = exports.getTheListACardIsIn = exports.updateChecklist = exports.getChecklist = exports.getCard = void 0;
+exports.postCardComment = exports.postCardAttachment = exports.putCard = exports.getTheListACardIsIn = exports.updateChecklist = exports.getChecklist = exports.getCard = void 0;
 const axios_1 = __importDefault(__nccwpck_require__(7241));
 const getCard = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.get(`/cards/${id}`, {
@@ -292,6 +292,17 @@ const postCardAttachment = (id, payload) => __awaiter(void 0, void 0, void 0, fu
     });
 });
 exports.postCardAttachment = postCardAttachment;
+const postCardComment = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield axios_1.default.post(`/cards/${id}/actions/comments`, {
+        params: {
+            text: `
+                    ${payload.name} \n
+                    ${payload.url}
+                `
+        }
+    });
+});
+exports.postCardComment = postCardComment;
 
 
 /***/ }),
@@ -340,7 +351,7 @@ function default_1() {
                 return models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
             if (!lists.includes(currentCardListPosition.name))
                 return models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
-            yield (0, card_repo_1.postCardAttachment)(card.id, {
+            yield (0, card_repo_1.postCardComment)(card.id, {
                 name: commitMessage,
                 url: (0, utils_1.populateCommitUrl)({
                     owner,
