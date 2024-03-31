@@ -1,0 +1,10 @@
+version: 'version'
+
+services:
+  action:
+    image: node:latest
+    container_name: action
+    working_dir: /app
+    command: npm run dev
+    volumes:
+      - .:/app

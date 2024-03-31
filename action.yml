@@ -1,0 +1,27 @@
+# commit pattern [<#card>] (branch) <type>(optional): <message>
+author: annoyingmice
+name: trello-action
+description: GitHub Action -> Trello
+
+branding:
+    color: white
+    icon: "mouse-pointer"
+inputs:
+  tr-token:
+    description: Trello auth token, visit https://trello.com/app-key
+    required: true
+  tr-key:
+    description: Trello api key, visit https://trello.com/app-key
+    required: true
+  tr-board:
+    description: Trello board ID
+    required: true
+  tr-action:
+    description: Trello card action, an array of the following ["comment", "attach", "move"] or a single action
+    required: true
+  tr-move-to:
+    description: Trello list name one of the follow depends what list was defined in your trello ["To do", "Blocked", "Rework", "Progress", "QA", "Done"]
+
+runs:
+    using: node16
+    main: 'dist/index.js'

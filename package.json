@@ -1,0 +1,41 @@
+{
+  "name": "trello-action",
+  "version": "1.0.0",
+  "description": "GitHub Action -> Trello",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/annoyingmice/trello-action.git"
+  },
+  "keywords": [
+    "trello",
+    "action",
+    "github",
+    "cards",
+    "boards",
+    "commit",
+    "push",
+    "merge"
+  ],
+  "author": "annoyingmice",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/annoyingmice/trello-action/issues"
+  },
+  "homepage": "https://github.com/annoyingmice/trello-action#readme",
+  "devDependencies": {
+    "@vercel/ncc": "^0.36.1",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "@types/node": "^20.12.2",
+    "axios": "^1.4.0"
+  }
+}
