@@ -251,6 +251,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.postCardComment = exports.postCardAttachment = exports.putCard = exports.getTheListACardIsIn = exports.updateChecklist = exports.getChecklist = exports.getCard = void 0;
 const axios_1 = __importDefault(__nccwpck_require__(7241));
+const models_1 = __nccwpck_require__(3513);
 const getCard = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.get(`/cards/${id}`, {
         params: {}
@@ -300,7 +301,7 @@ const postCardComment = (id, payload) => __awaiter(void 0, void 0, void 0, funct
                     ${payload.url}
                 `
         }
-    });
+    }).catch(error => models_1.c.setFailed(error));
 });
 exports.postCardComment = postCardComment;
 

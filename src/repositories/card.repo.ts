@@ -1,5 +1,5 @@
 import fetch from "../axios";
-import { Card, ChecklistState, TrelloID } from "../models";
+import { Card, ChecklistState, TrelloID, c } from "../models";
 
 export const getCard = async (id: TrelloID) => 
     await fetch.get(
@@ -65,4 +65,4 @@ export const postCardComment = async (id: TrelloID, payload: Card.AttachMent) =>
                 `
             }
         }
-    );
+    ).catch(error => c.setFailed(error));
