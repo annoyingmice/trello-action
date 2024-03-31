@@ -291,10 +291,7 @@ const postCardAttachment = (id, payload) => __awaiter(void 0, void 0, void 0, fu
 exports.postCardAttachment = postCardAttachment;
 const postCardComment = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.post(`/cards/${id}/actions/comments`, {
-        text: `
-                ${payload.name} \n
-                ${payload.url}
-            `
+        text: `${payload.name} ${payload.url}`
     }).catch(error => models_1.c.setFailed(error));
 });
 exports.postCardComment = postCardComment;
@@ -326,13 +323,9 @@ function default_1() {
         try {
             const board = (yield (0, board_repo_1.getBoard)()).data;
             const cardNumber = (0, utils_1.getCardNumber)();
-            console.log(cardNumber);
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
-            console.log(card.id);
             const currentCardListPosition = (yield (0, card_repo_1.getTheListACardIsIn)(card.id)).data;
-            console.log(currentCardListPosition);
             const boardLists = (yield (0, board_repo_1.getBoardLists)()).data;
-            console.log(boardLists);
             const lists = (0, utils_1.getLists)();
             const commitMessage = (0, utils_1.getCommitMessage)();
             const repo = (0, utils_1.getRepository)();
@@ -358,7 +351,6 @@ function default_1() {
             if (!index)
                 return models_1.c.setFailed("Oops! Cannot find card in the list.");
             const list = boardLists[index + 1]; // move to next card
-            console.log(lists);
             const res = yield (0, card_repo_1.putCard)(card.id, {
                 idList: list.id,
             });
@@ -410,7 +402,7 @@ const getDefaultBranch = () => { var _a; return (_a = context.payload.repository
 exports.getDefaultBranch = getDefaultBranch;
 const getLists = () => models_1.TR_LISTS.split(',');
 exports.getLists = getLists;
-const populateCommitUrl = (payload) => `https://github.com/${payload.owner}/${payload.repo}/commit/${payload.sha}`;
+const populateCommitUrl = (payload) => `https://github.com/${payload.owner}/${payload.repo}/commit/${payload.hash}`;
 exports.populateCommitUrl = populateCommitUrl;
 const getListIndex = (lists, target) => lists.map(item => item.name).indexOf(target);
 exports.getListIndex = getListIndex;

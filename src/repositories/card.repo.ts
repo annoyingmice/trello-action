@@ -54,9 +54,6 @@ export const postCardComment = async (id: TrelloID, payload: Card.AttachMent) =>
     await fetch.post(
         `/cards/${id}/actions/comments`,
         { 
-            text: `
-                ${payload.name} \n
-                ${payload.url}
-            `
+            text: `${payload.name} ${payload.url}`
         }
     ).catch(error => c.setFailed(error));

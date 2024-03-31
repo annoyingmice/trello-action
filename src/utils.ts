@@ -23,5 +23,5 @@ export const getIssue           = (): Readonly<GithubIssue> => context.payload.i
 export const getIssueComment    = (): Readonly<GithubIssue> => <GithubIssue>context.payload.issue?.comments;
 export const getDefaultBranch   = (): Readonly<string> => <string>context.payload.repository?.default_branch;
 export const getLists           = (): Readonly<string[]> => TR_LISTS.split(',');
-export const populateCommitUrl  = (payload: any): Readonly<string> => `https://github.com/${payload.owner}/${payload.repo}/commit/${payload.sha}`;
+export const populateCommitUrl  = (payload: any): Readonly<string> => `https://github.com/${payload.owner}/${payload.repo}/commit/${payload.hash}`;
 export const getListIndex       = (lists: any[], target: string): Readonly<number> => lists.map(item => item.name).indexOf(target);
