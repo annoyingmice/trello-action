@@ -16,10 +16,7 @@ npm install
 ```
 
 ## Usage
-Install/Enable trello power-up's in your trello board ```Github, Card Numbers by Reenhanced```   
-![power-up's](./public/images/1.png)
-![card ID](./public/images/2.png)
-![github history](./public/images/3.png)
+Install/Enable trello power-up's in your trello board ```Card Numbers by Reenhanced```
 <br/>
 In github workflow file <code>.yml</code>
 ```yml
