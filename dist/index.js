@@ -270,6 +270,7 @@ const updateChecklist = (id, idCheckItem, state) => __awaiter(void 0, void 0, vo
 });
 exports.updateChecklist = updateChecklist;
 const getTheListACardIsIn = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`/cards/${id}/list`);
     return yield axios_1.default.put(`/cards/${id}/list`, {
         params: {}
     });
@@ -322,6 +323,7 @@ function default_1() {
             const cardNumber = (0, utils_1.getCardNumber)();
             console.log(cardNumber);
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
+            console.log(card.id);
             const currentCardListPosition = (yield (0, card_repo_1.getTheListACardIsIn)(card.id)).data;
             const boardLists = (yield (0, board_repo_1.getBoardLists)()).data;
             const lists = (0, utils_1.getLists)();

@@ -25,13 +25,15 @@ export const updateChecklist = async (id: TrelloID, idCheckItem: TrelloID, state
         }
     );
 
-export const getTheListACardIsIn = async (id: TrelloID) =>
-    await fetch.put(
+export const getTheListACardIsIn = async (id: TrelloID) => {
+    console.log(`/cards/${id}/list`)
+    return await fetch.put(
         `/cards/${id}/list`,
         { 
             params: {}
         }
     );
+}
 
 export const putCard = async (id: TrelloID, payload: Card.Params) =>
     await fetch.put(
