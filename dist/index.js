@@ -446,16 +446,20 @@ exports["default"] = default_1;
 /***/ }),
 
 /***/ 1698:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
 const models_1 = __nccwpck_require__(3513);
 const models_2 = __nccwpck_require__(3513);
+const axios_1 = __importDefault(__nccwpck_require__(7241));
 exports.context = models_1.git.context;
-exports.octokit = new models_2.octo.Octokit({ auth: models_2.GH_TOKEN });
+exports.octokit = new models_2.octo.Octokit({ request: { fetch: axios_1.default }, auth: models_2.GH_TOKEN });
 const getCommitMessage = () => exports.context.payload.head_commit.message;
 exports.getCommitMessage = getCommitMessage;
 const getCardNumber = (commit) => { var _a, _b; return ((_b = (_a = commit === null || commit === void 0 ? void 0 : commit.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : -1); };
@@ -7061,6 +7065,41 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 357:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const axios_1 = __importDefault(__nccwpck_require__(8757));
+const models_1 = __nccwpck_require__(859);
+// Axios custom instance
+const fetch = axios_1.default.create({
+    baseURL: "https://api.trello.com/1",
+    timeout: 1000,
+    headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    },
+});
+// Interceptor always attach key, and token to the request
+fetch.interceptors.request.use((config) => {
+    // Add your global parameters to the request config
+    config.params = Object.assign(Object.assign({}, config.params), { key: models_1.TR_API_KEY, token: models_1.TR_API_TOKEN });
+    return config;
+}, (error) => {
+    // Handle request error
+    models_1.c.setFailed(error);
+    return Promise.reject(error);
+});
+exports["default"] = fetch;
+
+
+/***/ }),
+
 /***/ 118:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -7180,16 +7219,20 @@ exports.getCommits = getCommits;
 /***/ }),
 
 /***/ 314:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
 const models_1 = __nccwpck_require__(859);
 const models_2 = __nccwpck_require__(859);
+const axios_1 = __importDefault(__nccwpck_require__(357));
 exports.context = models_1.git.context;
-exports.octokit = new models_2.octo.Octokit({ auth: models_2.GH_TOKEN });
+exports.octokit = new models_2.octo.Octokit({ request: { fetch: axios_1.default }, auth: models_2.GH_TOKEN });
 const getCommitMessage = () => exports.context.payload.head_commit.message;
 exports.getCommitMessage = getCommitMessage;
 const getCardNumber = (commit) => { var _a, _b; return ((_b = (_a = commit === null || commit === void 0 ? void 0 : commit.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : -1); };
