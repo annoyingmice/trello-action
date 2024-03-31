@@ -11,7 +11,9 @@ export default async function () {
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
         console.log(card.id)
         const currentCardListPosition   = (await getTheListACardIsIn(card.id)).data as List.Model;
+        console.log(currentCardListPosition)
         const boardLists                = (await getBoardLists()).data;
+        console.log(boardLists)
         const lists                     = getLists();
         const commitMessage             = getCommitMessage();
         const repo                      = getRepository();
@@ -38,6 +40,7 @@ export default async function () {
         const index = getListIndex(boardLists, currentCardListPosition.name);
         if(!index) return c.setFailed("Oops! Cannot find card in the list.");
         const list = boardLists[index+1]; // move to next card
+        console.log(lists);
 
         const res = await putCard(
             card.id,

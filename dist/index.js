@@ -325,7 +325,9 @@ function default_1() {
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
             console.log(card.id);
             const currentCardListPosition = (yield (0, card_repo_1.getTheListACardIsIn)(card.id)).data;
+            console.log(currentCardListPosition);
             const boardLists = (yield (0, board_repo_1.getBoardLists)()).data;
+            console.log(boardLists);
             const lists = (0, utils_1.getLists)();
             const commitMessage = (0, utils_1.getCommitMessage)();
             const repo = (0, utils_1.getRepository)();
@@ -351,6 +353,7 @@ function default_1() {
             if (!index)
                 return models_1.c.setFailed("Oops! Cannot find card in the list.");
             const list = boardLists[index + 1]; // move to next card
+            console.log(lists);
             const res = yield (0, card_repo_1.putCard)(card.id, {
                 idList: list.id,
             });
