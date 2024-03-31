@@ -19,7 +19,7 @@ export default async function () {
     try {
         console.log(context.payload.pull_request)
         const board                     = (await getBoard()).data as Board.Model;
-        const cardNumber                = getCardNumber('');
+        const cardNumber                = getCardNumber('#1');
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
         const commitMessage             = getCommitMessage();
         const repo                      = getRepository();
