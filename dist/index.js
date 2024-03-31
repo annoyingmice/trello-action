@@ -28,6 +28,7 @@ fetch.interceptors.request.use((config) => {
     return config;
 }, (error) => {
     // Handle request error
+    models_1.c.setFailed(error);
     return Promise.reject(error);
 });
 exports["default"] = fetch;
@@ -352,7 +353,7 @@ function default_1() {
             models_1.c.setOutput('statusCode', res.status);
         }
         catch (err) {
-            models_1.c.setFailed(JSON.stringify(err));
+            models_1.c.setFailed(err);
         }
     });
 }

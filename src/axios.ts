@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TR_API_KEY, TR_API_TOKEN } from "./models";
+import { TR_API_KEY, TR_API_TOKEN, c } from "./models";
 
 // Axios custom instance
 const fetch = axios.create({
@@ -26,6 +26,7 @@ fetch.interceptors.request.use(
   },
   (error) => {
     // Handle request error
+    c.setFailed(error)
     return Promise.reject(error);
   }
 );

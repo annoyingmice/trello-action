@@ -46,7 +46,7 @@ export default async function () {
 
         c.setOutput('statusCode', res.status);
 
-    } catch (err: unknown) {
-        c.setFailed(JSON.stringify(err));
+    } catch (err) {
+        c.setFailed(err as Error);
     }
 }
