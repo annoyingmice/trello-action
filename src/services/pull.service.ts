@@ -1,7 +1,8 @@
+import { getCommits } from "src/repositories/github.repo";
 import { Board, Card, c } from "../models";
 import { getBoard, getCardFromBoardByNumber } from "../repositories/board.repo";
 import { postCardAttachment } from "../repositories/card.repo";
-import { context } from "../utils"
+import { context, octokit } from "../utils"
 import { 
     getCardNumber, 
     getLists, 
@@ -17,7 +18,12 @@ export default async function () {
   // if target branch is the default branch
   // move card to done
     try {
-        console.log(context.payload.pull_request)
+        const commits                   = getCommits({
+            owner: getRepositoryOwner(),
+            repo: getRepository(),
+            hash: context.payload.pull_request?.number,
+        });
+        console.log(commits)
         const board                     = (await getBoard()).data as Board.Model;
         const cardNumber                = getCardNumber('#1');
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;

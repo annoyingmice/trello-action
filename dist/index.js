@@ -329,16 +329,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const github_repo_1 = __nccwpck_require__(2);
 const models_1 = __nccwpck_require__(3513);
 const board_repo_1 = __nccwpck_require__(1113);
 const utils_1 = __nccwpck_require__(1698);
 const utils_2 = __nccwpck_require__(1698);
 function default_1() {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         // if target branch is the default branch
         // move card to done
         try {
-            console.log(utils_1.context.payload.pull_request);
+            const commits = (0, github_repo_1.getCommits)({
+                owner: (0, utils_2.getRepositoryOwner)(),
+                repo: (0, utils_2.getRepository)(),
+                hash: (_a = utils_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number,
+            });
+            console.log(commits);
             const board = (yield (0, board_repo_1.getBoard)()).data;
             const cardNumber = (0, utils_2.getCardNumber)('#1');
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
@@ -7051,6 +7058,167 @@ function version(uuid) {
 
 var _default = version;
 exports["default"] = _default;
+
+/***/ }),
+
+/***/ 118:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+
+/***/ 470:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+
+/***/ 206:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+
+/***/ 859:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GH_TOKEN = exports.TR_LISTS = exports.TR_BOARD = exports.TR_API_TOKEN = exports.TR_API_KEY = exports.octo = exports.c = exports.git = exports.Github = exports.Card = exports.List = exports.Board = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const octokit = __importStar(__nccwpck_require__(8570));
+exports.Board = __importStar(__nccwpck_require__(118));
+exports.List = __importStar(__nccwpck_require__(950));
+exports.Card = __importStar(__nccwpck_require__(470));
+exports.Github = __importStar(__nccwpck_require__(206));
+exports.git = github;
+exports.c = core;
+exports.octo = octokit;
+exports.TR_API_KEY = core.getInput(`tr-key`, { required: true });
+exports.TR_API_TOKEN = core.getInput(`tr-token`, { required: true });
+exports.TR_BOARD = core.getInput(`tr-board`, { required: true });
+exports.TR_LISTS = core.getInput(`tr-list`) || 'Back Logs,Bugs,In Progress,For QA,Done';
+exports.GH_TOKEN = core.getInput(`gh-token`, { required: true });
+
+
+/***/ }),
+
+/***/ 950:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+
+/***/ 2:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getCommits = void 0;
+const utils_1 = __nccwpck_require__(314);
+const getCommits = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield utils_1.octokit.request(`GET /repos/${payload.owner}/${payload.repo}/pulls/${payload.pull_number}/commits`, {
+        owner: payload.owner,
+        repo: payload.repo,
+        pull_number: payload.pr_number,
+    });
+});
+exports.getCommits = getCommits;
+
+
+/***/ }),
+
+/***/ 314:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
+const models_1 = __nccwpck_require__(859);
+const models_2 = __nccwpck_require__(859);
+exports.context = models_1.git.context;
+exports.octokit = new models_2.octo.Octokit({ auth: models_2.GH_TOKEN });
+const getCommitMessage = () => exports.context.payload.head_commit.message;
+exports.getCommitMessage = getCommitMessage;
+const getCardNumber = (commit) => { var _a, _b; return ((_b = (_a = commit === null || commit === void 0 ? void 0 : commit.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : -1); };
+exports.getCardNumber = getCardNumber;
+const getActionType = () => exports.context.payload.action;
+exports.getActionType = getActionType;
+const getOwner = () => exports.context.payload.commits[0].author.username;
+exports.getOwner = getOwner;
+const getRepository = () => exports.context.repo.repo;
+exports.getRepository = getRepository;
+const getRepositoryOwner = () => exports.context.repo.owner;
+exports.getRepositoryOwner = getRepositoryOwner;
+const getCommitHash = () => exports.context.sha;
+exports.getCommitHash = getCommitHash;
+const getReviewComments = () => exports.context.payload.review.comments;
+exports.getReviewComments = getReviewComments;
+const getIssue = () => exports.context.payload.issue;
+exports.getIssue = getIssue;
+const getIssueComment = () => { var _a; return (_a = exports.context.payload.issue) === null || _a === void 0 ? void 0 : _a.comments; };
+exports.getIssueComment = getIssueComment;
+const getDefaultBranch = () => { var _a; return (_a = exports.context.payload.repository) === null || _a === void 0 ? void 0 : _a.default_branch; };
+exports.getDefaultBranch = getDefaultBranch;
+const getLists = () => models_1.TR_LISTS.split(',');
+exports.getLists = getLists;
+const populateCommitUrl = (payload) => `https://github.com/${payload.owner}/${payload.repo}/commit/${payload.hash}`;
+exports.populateCommitUrl = populateCommitUrl;
+const getListIndex = (lists, target) => lists.map(item => item.name).indexOf(target);
+exports.getListIndex = getListIndex;
+
 
 /***/ }),
 
