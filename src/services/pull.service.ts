@@ -23,29 +23,28 @@ export default async function () {
             repo: getRepository(),
             pr_number: context.payload.pull_request?.number,
         });
-        console.log(commits.data);
+        const commitMessage                = commits.data[commits.data.length-1].commit.message;
         const board                     = (await getBoard()).data as Board.Model;
-        const cardNumber                = getCardNumber('#1');
+        const cardNumber                = getCardNumber(commitMessage);
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
-        // const commitMessage             = getCommitMessage();
         const repo                      = getRepository();
         const owner                     = getRepositoryOwner();
         const hash                      = getCommitHash();
         
-        // if(board.closed) return c.setFailed("Oops! Board is closed.");
-        // if(card.closed) return c.setFailed("Oops! Card is closed.");
+        if(board.closed) return c.setFailed("Oops! Board is closed.");
+        if(card.closed) return c.setFailed("Oops! Card is closed.");
 
-        // const res = await postCardAttachment(
-        //     card.id,
-        //     {
-        //         name: commitMessage,
-        //         url: populateCommitUrl({
-        //             owner,
-        //             repo,
-        //             hash,
-        //         })
-        //     }
-        // );
+        const res = await postCardAttachment(
+            card.id,
+            {
+                name: commitMessage,
+                url: populateCommitUrl({
+                    owner,
+                    repo,
+                    hash,
+                })
+            }
+        );
 
         // c.setOutput('statusCode', res.status);
 

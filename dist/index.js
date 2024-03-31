@@ -332,6 +332,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const github_repo_1 = __nccwpck_require__(2);
 const models_1 = __nccwpck_require__(3513);
 const board_repo_1 = __nccwpck_require__(1113);
+const card_repo_1 = __nccwpck_require__(3564);
 const utils_1 = __nccwpck_require__(1698);
 const utils_2 = __nccwpck_require__(1698);
 function default_1() {
@@ -345,27 +346,25 @@ function default_1() {
                 repo: (0, utils_2.getRepository)(),
                 pr_number: (_a = utils_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number,
             });
-            console.log(commits.data);
+            const commitMessage = commits.data[commits.data.length - 1].commit.message;
             const board = (yield (0, board_repo_1.getBoard)()).data;
-            const cardNumber = (0, utils_2.getCardNumber)('#1');
+            const cardNumber = (0, utils_2.getCardNumber)(commitMessage);
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
-            // const commitMessage             = getCommitMessage();
             const repo = (0, utils_2.getRepository)();
             const owner = (0, utils_2.getRepositoryOwner)();
             const hash = (0, utils_2.getCommitHash)();
-            // if(board.closed) return c.setFailed("Oops! Board is closed.");
-            // if(card.closed) return c.setFailed("Oops! Card is closed.");
-            // const res = await postCardAttachment(
-            //     card.id,
-            //     {
-            //         name: commitMessage,
-            //         url: populateCommitUrl({
-            //             owner,
-            //             repo,
-            //             hash,
-            //         })
-            //     }
-            // );
+            if (board.closed)
+                return models_1.c.setFailed("Oops! Board is closed.");
+            if (card.closed)
+                return models_1.c.setFailed("Oops! Card is closed.");
+            const res = yield (0, card_repo_1.postCardAttachment)(card.id, {
+                name: commitMessage,
+                url: (0, utils_2.populateCommitUrl)({
+                    owner,
+                    repo,
+                    hash,
+                })
+            });
             // c.setOutput('statusCode', res.status);
         }
         catch (err) {
