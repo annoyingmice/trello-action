@@ -23,7 +23,7 @@ export default async function () {
             repo: getRepository(),
             pr_number: context.payload.pull_request?.number,
         });
-        console.log(commits.data[0].commit.message);
+        console.log(commits.data);
         const board                     = (await getBoard()).data as Board.Model;
         const cardNumber                = getCardNumber('#1');
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;

@@ -345,7 +345,7 @@ function default_1() {
                 repo: (0, utils_2.getRepository)(),
                 pr_number: (_a = utils_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number,
             });
-            console.log(commits.data[0].commit.message);
+            console.log(commits.data);
             const board = (yield (0, board_repo_1.getBoard)()).data;
             const cardNumber = (0, utils_2.getCardNumber)('#1');
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
