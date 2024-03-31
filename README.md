@@ -37,6 +37,7 @@ jobs:
             tr-token: xxx # Trello auth token, visit https://trello.com/app-key
             tr-board: xxx # Trello board ID
             tr-list: xxx # e.g 'Back Logs,Bugs,In Progress,For QA,Done'
+            gh-toke: xxx # github token Profile > settings > Developer Settings > Personal access tokens
 ```
 <br/>
 Note: Please follow commit/comment(pull_request) format e.g "#card feat(docs)!: updated docs""

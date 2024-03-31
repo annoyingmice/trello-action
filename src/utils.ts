@@ -5,11 +5,14 @@ import {
     GithubContext, 
     GithubIssue 
 } from "./models";
+import { Octokit } from "@octokit/core";
+import { GH_TOKEN } from "./models";
 
-export const context: GithubContext = git.context;
+export const context: GithubContext     = git.context;
+export const octokit: Readonly<Octokit> = new Octokit({ auth: GH_TOKEN });
 
 export const getCommitMessage   = (): Readonly<string> => context.payload.head_commit.message;
-export const getCardNumber      = (): Readonly<number> => context.payload.head_commit.message.match(/\d+/g)[0];
+export const getCardNumber      = (commit: string): Readonly<number> => (commit?.match(/\d+/g)?.[0] ?? -1) as Readonly<number>;
 export const getActionType      = (): Readonly<ActionTypes> => <ActionTypes>context.payload.action;
 export const getOwner           = (): Readonly<string> => context.payload.commits[0].author.username;
 export const getRepository      = (): Readonly<string> => context.repo.repo;
