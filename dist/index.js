@@ -324,7 +324,7 @@ function default_1() {
         // if target branch is the default branch
         // move card to done
         try {
-            console.log(utils_1.context.payload);
+            utils_1.context.payload.pull_request.commits.forEach(item => console.log(item));
             const board = (yield (0, board_repo_1.getBoard)()).data;
             const cardNumber = (0, utils_2.getCardNumber)();
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
