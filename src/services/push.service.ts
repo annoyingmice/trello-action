@@ -1,4 +1,4 @@
-import { getCardNumber, getCommitHash, getCommitMessage, getDefaultBranch, getListIndex, getLists, getRepository, getRepositoryOwner, populateCommitUrl } from "../utils";
+import { context, getCardNumber, getCommitHash, getCommitMessage, getDefaultBranch, getListIndex, getLists, getRepository, getRepositoryOwner, populateCommitUrl } from "../utils";
 import { getBoard, getBoardLists, getCardFromBoardByNumber } from "../repositories/board.repo";
 import { getTheListACardIsIn, postCardAttachment, postCardComment, putCard } from "../repositories/card.repo";
 import { Board, Card, List, c } from "../models";
@@ -6,7 +6,7 @@ import { Board, Card, List, c } from "../models";
 export default async function () {
     try {
         const board                     = (await getBoard()).data as Board.Model;
-        const cardNumber                = getCardNumber();
+        const cardNumber                = getCardNumber(context.payload.head_commit.message);
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
         const currentCardListPosition   = (await getTheListACardIsIn(card.id)).data as List.Model;
         const boardLists                = (await getBoardLists()).data;
