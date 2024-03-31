@@ -340,7 +340,7 @@ function default_1() {
         // if target branch is the default branch
         // move card to done
         try {
-            const commits = (0, github_repo_1.getCommits)({
+            const commits = yield (0, github_repo_1.getCommits)({
                 owner: (0, utils_2.getRepositoryOwner)(),
                 repo: (0, utils_2.getRepository)(),
                 pr_number: (_a = utils_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number,
@@ -349,7 +349,7 @@ function default_1() {
             const board = (yield (0, board_repo_1.getBoard)()).data;
             const cardNumber = (0, utils_2.getCardNumber)('#1');
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
-            const commitMessage = (0, utils_2.getCommitMessage)();
+            // const commitMessage             = getCommitMessage();
             const repo = (0, utils_2.getRepository)();
             const owner = (0, utils_2.getRepositoryOwner)();
             const hash = (0, utils_2.getCommitHash)();

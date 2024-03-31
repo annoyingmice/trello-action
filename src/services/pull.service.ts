@@ -18,7 +18,7 @@ export default async function () {
   // if target branch is the default branch
   // move card to done
     try {
-        const commits                   = getCommits({
+        const commits                   = await getCommits({
             owner: getRepositoryOwner(),
             repo: getRepository(),
             pr_number: context.payload.pull_request?.number,
@@ -27,7 +27,7 @@ export default async function () {
         const board                     = (await getBoard()).data as Board.Model;
         const cardNumber                = getCardNumber('#1');
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
-        const commitMessage             = getCommitMessage();
+        // const commitMessage             = getCommitMessage();
         const repo                      = getRepository();
         const owner                     = getRepositoryOwner();
         const hash                      = getCommitHash();
