@@ -291,7 +291,7 @@ const postCardAttachment = (id, payload) => __awaiter(void 0, void 0, void 0, fu
 exports.postCardAttachment = postCardAttachment;
 const postCardComment = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.post(`/cards/${id}/actions/comments`, {
-        text: `${payload.name} ${payload.url}`
+        text: String(`[${payload.url}] ${payload.name}`)
     }).catch(error => models_1.c.setFailed(error));
 });
 exports.postCardComment = postCardComment;
