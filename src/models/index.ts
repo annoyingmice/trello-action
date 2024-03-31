@@ -1,5 +1,6 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
+import * as octokit from "@octokit/core";
 
 export * as Board from "./board.model";
 export * as List from "./list.model";
@@ -8,6 +9,7 @@ export * as Github from "./github.model";
 
 export const git    = github;
 export const c      = core;
+export const octo   = octokit;
 
 export const TR_API_KEY     = core.getInput(`tr-key`,   { required: true });
 export const TR_API_TOKEN   = core.getInput(`tr-token`, { required: true });

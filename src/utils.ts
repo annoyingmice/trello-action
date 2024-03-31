@@ -5,11 +5,10 @@ import {
     GithubContext, 
     GithubIssue 
 } from "./models";
-import { Octokit } from "@octokit/core";
-import { GH_TOKEN } from "./models";
+import { GH_TOKEN, octo } from "./models";
 
 export const context: GithubContext     = git.context;
-export const octokit: Readonly<Octokit> = new Octokit({ auth: GH_TOKEN });
+export const octokit                    = new octo.Octokit({ auth: GH_TOKEN });
 
 export const getCommitMessage   = (): Readonly<string> => context.payload.head_commit.message;
 export const getCardNumber      = (commit: string): Readonly<number> => (commit?.match(/\d+/g)?.[0] ?? -1) as Readonly<number>;
