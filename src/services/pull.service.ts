@@ -17,7 +17,7 @@ export default async function () {
   // if target branch is the default branch
   // move card to done
     try {
-        console.log(context.payload.pull_request.commits)
+        console.log(context.payload)
         const board                     = (await getBoard()).data as Board.Model;
         const cardNumber                = getCardNumber();
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
