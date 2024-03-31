@@ -1,6 +1,7 @@
 import { Board, Card, c } from "../models";
 import { getBoard, getCardFromBoardByNumber } from "../repositories/board.repo";
 import { postCardAttachment } from "../repositories/card.repo";
+import { context } from "../utils"
 import { 
     getCardNumber, 
     getLists, 
@@ -24,7 +25,7 @@ export default async function () {
         const owner                     = getRepositoryOwner();
         const hash                      = getCommitHash();
         
-        console.log(commitMessage)
+        console.log(context.payload)
         // if(board.closed) return c.setFailed("Oops! Board is closed.");
         // if(card.closed) return c.setFailed("Oops! Card is closed.");
 

@@ -318,19 +318,20 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const models_1 = __nccwpck_require__(3513);
 const board_repo_1 = __nccwpck_require__(1113);
 const utils_1 = __nccwpck_require__(1698);
+const utils_2 = __nccwpck_require__(1698);
 function default_1() {
     return __awaiter(this, void 0, void 0, function* () {
         // if target branch is the default branch
         // move card to done
         try {
             const board = (yield (0, board_repo_1.getBoard)()).data;
-            const cardNumber = (0, utils_1.getCardNumber)();
+            const cardNumber = (0, utils_2.getCardNumber)();
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
-            const commitMessage = (0, utils_1.getCommitMessage)();
-            const repo = (0, utils_1.getRepository)();
-            const owner = (0, utils_1.getRepositoryOwner)();
-            const hash = (0, utils_1.getCommitHash)();
-            console.log(commitMessage);
+            const commitMessage = (0, utils_2.getCommitMessage)();
+            const repo = (0, utils_2.getRepository)();
+            const owner = (0, utils_2.getRepositoryOwner)();
+            const hash = (0, utils_2.getCommitHash)();
+            console.log(utils_1.context.payload);
             // if(board.closed) return c.setFailed("Oops! Board is closed.");
             // if(card.closed) return c.setFailed("Oops! Card is closed.");
             // const res = await postCardAttachment(
@@ -429,30 +430,30 @@ exports["default"] = default_1;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = void 0;
+exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.context = void 0;
 const models_1 = __nccwpck_require__(3513);
-const context = models_1.git.context;
-const getCommitMessage = () => context.payload.head_commit.message;
+exports.context = models_1.git.context;
+const getCommitMessage = () => exports.context.payload.head_commit.message;
 exports.getCommitMessage = getCommitMessage;
-const getCardNumber = () => context.payload.head_commit.message.match(/\d+/g)[0];
+const getCardNumber = () => exports.context.payload.head_commit.message.match(/\d+/g)[0];
 exports.getCardNumber = getCardNumber;
-const getActionType = () => context.payload.action;
+const getActionType = () => exports.context.payload.action;
 exports.getActionType = getActionType;
-const getOwner = () => context.payload.commits[0].author.username;
+const getOwner = () => exports.context.payload.commits[0].author.username;
 exports.getOwner = getOwner;
-const getRepository = () => context.repo.repo;
+const getRepository = () => exports.context.repo.repo;
 exports.getRepository = getRepository;
-const getRepositoryOwner = () => context.repo.owner;
+const getRepositoryOwner = () => exports.context.repo.owner;
 exports.getRepositoryOwner = getRepositoryOwner;
-const getCommitHash = () => context.sha;
+const getCommitHash = () => exports.context.sha;
 exports.getCommitHash = getCommitHash;
-const getReviewComments = () => context.payload.review.comments;
+const getReviewComments = () => exports.context.payload.review.comments;
 exports.getReviewComments = getReviewComments;
-const getIssue = () => context.payload.issue;
+const getIssue = () => exports.context.payload.issue;
 exports.getIssue = getIssue;
-const getIssueComment = () => { var _a; return (_a = context.payload.issue) === null || _a === void 0 ? void 0 : _a.comments; };
+const getIssueComment = () => { var _a; return (_a = exports.context.payload.issue) === null || _a === void 0 ? void 0 : _a.comments; };
 exports.getIssueComment = getIssueComment;
-const getDefaultBranch = () => { var _a; return (_a = context.payload.repository) === null || _a === void 0 ? void 0 : _a.default_branch; };
+const getDefaultBranch = () => { var _a; return (_a = exports.context.payload.repository) === null || _a === void 0 ? void 0 : _a.default_branch; };
 exports.getDefaultBranch = getDefaultBranch;
 const getLists = () => models_1.TR_LISTS.split(',');
 exports.getLists = getLists;

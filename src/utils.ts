@@ -6,7 +6,7 @@ import {
     GithubIssue 
 } from "./models";
 
-const context: GithubContext = git.context;
+export const context: GithubContext = git.context;
 
 export const getCommitMessage   = (): Readonly<string> => context.payload.head_commit.message;
 export const getCardNumber      = (): Readonly<number> => context.payload.head_commit.message.match(/\d+/g)[0];
