@@ -21,7 +21,7 @@ export const updateChecklist = async (id: TrelloID, idCheckItem: TrelloID, state
     await fetch.put(
         `/cards/${id}/checkItem/${idCheckItem}`, 
         { 
-            params: { state }
+            state,
         }
     );
 
@@ -37,9 +37,7 @@ export const putCard = async (id: TrelloID, payload: Card.Params) =>
     await fetch.put(
         `/cards/${id}`,
         { 
-            params: {
-                idList: payload.idList,
-            }
+            idList: payload.idList,
         }
     );
 
@@ -47,10 +45,8 @@ export const postCardAttachment = async (id: TrelloID, payload: Card.AttachMent)
     await fetch.post(
         `/cards/${id}/attachments`,
         { 
-            params: {
-                name: payload.name,
-                url: payload.url,
-            }
+            name: payload.name,
+            url: payload.url,
         }
     );
 
@@ -58,11 +54,9 @@ export const postCardComment = async (id: TrelloID, payload: Card.AttachMent) =>
     await fetch.post(
         `/cards/${id}/actions/comments`,
         { 
-            params: {
-                text: `
-                    ${payload.name} \n
-                    ${payload.url}
-                `
-            }
+            text: `
+                ${payload.name} \n
+                ${payload.url}
+            `
         }
     ).catch(error => c.setFailed(error));

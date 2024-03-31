@@ -266,7 +266,7 @@ const getChecklist = (id) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getChecklist = getChecklist;
 const updateChecklist = (id, idCheckItem, state) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.put(`/cards/${id}/checkItem/${idCheckItem}`, {
-        params: { state }
+        state,
     });
 });
 exports.updateChecklist = updateChecklist;
@@ -278,29 +278,23 @@ const getTheListACardIsIn = (id) => __awaiter(void 0, void 0, void 0, function* 
 exports.getTheListACardIsIn = getTheListACardIsIn;
 const putCard = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.put(`/cards/${id}`, {
-        params: {
-            idList: payload.idList,
-        }
+        idList: payload.idList,
     });
 });
 exports.putCard = putCard;
 const postCardAttachment = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.post(`/cards/${id}/attachments`, {
-        params: {
-            name: payload.name,
-            url: payload.url,
-        }
+        name: payload.name,
+        url: payload.url,
     });
 });
 exports.postCardAttachment = postCardAttachment;
 const postCardComment = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.post(`/cards/${id}/actions/comments`, {
-        params: {
-            text: `
-                    ${payload.name} \n
-                    ${payload.url}
-                `
-        }
+        text: `
+                ${payload.name} \n
+                ${payload.url}
+            `
     }).catch(error => models_1.c.setFailed(error));
 });
 exports.postCardComment = postCardComment;
