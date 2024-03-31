@@ -55,6 +55,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const models_1 = __nccwpck_require__(3513);
+const pull_service_1 = __importDefault(__nccwpck_require__(270));
 const push_service_1 = __importDefault(__nccwpck_require__(839));
 function onPull() {
     return __awaiter(this, void 0, void 0, function* () { });
@@ -86,7 +87,7 @@ function run() {
             case "push":
                 return yield (0, push_service_1.default)();
             case "pull_request":
-                return yield onPull();
+                return yield (0, pull_service_1.default)();
             case "pull_request_review":
                 return yield onPullReview();
             case "pull_request_review_comment":
@@ -299,6 +300,62 @@ exports.postCardComment = postCardComment;
 
 /***/ }),
 
+/***/ 270:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const models_1 = __nccwpck_require__(3513);
+const board_repo_1 = __nccwpck_require__(1113);
+const utils_1 = __nccwpck_require__(1698);
+function default_1() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // if target branch is the default branch
+        // move card to done
+        try {
+            const board = (yield (0, board_repo_1.getBoard)()).data;
+            const cardNumber = (0, utils_1.getCardNumber)();
+            const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
+            const commitMessage = (0, utils_1.getCommitMessage)();
+            const repo = (0, utils_1.getRepository)();
+            const owner = (0, utils_1.getRepositoryOwner)();
+            const hash = (0, utils_1.getCommitHash)();
+            console.log(commitMessage);
+            // if(board.closed) return c.setFailed("Oops! Board is closed.");
+            // if(card.closed) return c.setFailed("Oops! Card is closed.");
+            // const res = await postCardAttachment(
+            //     card.id,
+            //     {
+            //         name: commitMessage,
+            //         url: populateCommitUrl({
+            //             owner,
+            //             repo,
+            //             hash,
+            //         })
+            //     }
+            // );
+            // c.setOutput('statusCode', res.status);
+        }
+        catch (err) {
+            models_1.c.setFailed(err);
+        }
+    });
+}
+exports["default"] = default_1;
+
+
+/***/ }),
+
 /***/ 839:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -377,10 +434,7 @@ const models_1 = __nccwpck_require__(3513);
 const context = models_1.git.context;
 const getCommitMessage = () => context.payload.head_commit.message;
 exports.getCommitMessage = getCommitMessage;
-const getCardNumber = () => {
-    console.log(context.payload.head_commit.message, context.payload.head_commit.message.match(/\d+/g)[0]);
-    return context.payload.head_commit.message.match(/\d+/g)[0];
-};
+const getCardNumber = () => context.payload.head_commit.message.match(/\d+/g)[0];
 exports.getCardNumber = getCardNumber;
 const getActionType = () => context.payload.action;
 exports.getActionType = getActionType;

@@ -1,4 +1,5 @@
 import { c } from './models';
+import pullService from './services/pull.service';
 import pushService from './services/push.service';
 
 async function onPull() {}
@@ -15,7 +16,7 @@ async function run() {
     case "push":
       return await pushService();
     case "pull_request":
-      return await onPull();
+      return await pullService();
     case "pull_request_review":
       return await onPullReview();
     case "pull_request_review_comment":
