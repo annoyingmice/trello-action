@@ -284,8 +284,7 @@ const putCard = (id, payload) => __awaiter(void 0, void 0, void 0, function* () 
 exports.putCard = putCard;
 const postCardAttachment = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.post(`/cards/${id}/attachments`, {
-        name: payload.name,
-        url: payload.url,
+        name: String(`[${payload.url}] ${payload.name}`),
     });
 });
 exports.postCardAttachment = postCardAttachment;
@@ -339,7 +338,7 @@ function default_1() {
                 return models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
             if (!lists.includes(currentCardListPosition.name))
                 return models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
-            yield (0, card_repo_1.postCardComment)(card.id, {
+            yield (0, card_repo_1.postCardAttachment)(card.id, {
                 name: commitMessage,
                 url: (0, utils_1.populateCommitUrl)({
                     owner,

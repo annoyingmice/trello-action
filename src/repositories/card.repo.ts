@@ -45,8 +45,7 @@ export const postCardAttachment = async (id: TrelloID, payload: Card.AttachMent)
     await fetch.post(
         `/cards/${id}/attachments`,
         { 
-            name: payload.name,
-            url: payload.url,
+            name: String(`[${payload.url}] ${payload.name}`),
         }
     );
 

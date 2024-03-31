@@ -1,6 +1,6 @@
 import { getCardNumber, getCommitHash, getCommitMessage, getDefaultBranch, getListIndex, getLists, getRepository, getRepositoryOwner, populateCommitUrl } from "../utils";
 import { getBoard, getBoardLists, getCardFromBoardByNumber } from "../repositories/board.repo";
-import { getTheListACardIsIn, postCardComment, putCard } from "../repositories/card.repo";
+import { getTheListACardIsIn, postCardAttachment, postCardComment, putCard } from "../repositories/card.repo";
 import { Board, Card, List, c } from "../models";
 
 export default async function () {
@@ -21,7 +21,7 @@ export default async function () {
         if(boardLists.length !== lists.length) return c.setFailed("Oops! Boards in .yml and trello mismatch.")
         if(!lists.includes(currentCardListPosition.name)) return c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
 
-        await postCardComment(
+        await postCardAttachment(
             card.id,
             {
                 name: commitMessage,
