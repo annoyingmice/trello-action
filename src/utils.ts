@@ -9,7 +9,10 @@ import {
 const context: GithubContext = git.context;
 
 export const getCommitMessage   = (): Readonly<string> => context.payload.head_commit.message;
-export const getCardNumber      = (): Readonly<number> => context.payload.head_commit.message.match(/\d+/g)[0];
+export const getCardNumber      = (): Readonly<number> => {
+    console.log(context.payload.head_commit.message, context.payload.head_commit.message.match(/\d+/g)[0]);
+    return context.payload.head_commit.message.match(/\d+/g)[0]
+};
 export const getActionType      = (): Readonly<ActionTypes> => <ActionTypes>context.payload.action;
 export const getOwner           = (): Readonly<string> => context.payload.commits[0].author.username;
 export const getRepository      = (): Readonly<string> => context.repo.repo;

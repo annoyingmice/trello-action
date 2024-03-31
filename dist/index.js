@@ -373,7 +373,10 @@ const models_1 = __nccwpck_require__(3513);
 const context = models_1.git.context;
 const getCommitMessage = () => context.payload.head_commit.message;
 exports.getCommitMessage = getCommitMessage;
-const getCardNumber = () => context.payload.head_commit.message.match(/\d+/g)[0];
+const getCardNumber = () => {
+    console.log(context.payload.head_commit.message, context.payload.head_commit.message.match(/\d+/g)[0]);
+    return context.payload.head_commit.message.match(/\d+/g)[0];
+};
 exports.getCardNumber = getCardNumber;
 const getActionType = () => context.payload.action;
 exports.getActionType = getActionType;
