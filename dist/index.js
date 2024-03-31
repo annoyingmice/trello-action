@@ -284,7 +284,8 @@ const putCard = (id, payload) => __awaiter(void 0, void 0, void 0, function* () 
 exports.putCard = putCard;
 const postCardAttachment = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.post(`/cards/${id}/attachments`, {
-        name: String(`[${payload.url}] ${payload.name}`),
+        name: payload.name,
+        url: payload.url,
     });
 });
 exports.postCardAttachment = postCardAttachment;
