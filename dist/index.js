@@ -270,8 +270,7 @@ const updateChecklist = (id, idCheckItem, state) => __awaiter(void 0, void 0, vo
 });
 exports.updateChecklist = updateChecklist;
 const getTheListACardIsIn = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(`/cards/${id}/list`);
-    return yield axios_1.default.put(`/cards/${id}/list`, {
+    return yield axios_1.default.get(`/cards/${id}/list`, {
         params: {}
     });
 });
