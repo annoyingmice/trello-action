@@ -324,6 +324,7 @@ function default_1() {
         // if target branch is the default branch
         // move card to done
         try {
+            console.log(utils_1.context.payload);
             const board = (yield (0, board_repo_1.getBoard)()).data;
             const cardNumber = (0, utils_2.getCardNumber)();
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
@@ -331,7 +332,6 @@ function default_1() {
             const repo = (0, utils_2.getRepository)();
             const owner = (0, utils_2.getRepositoryOwner)();
             const hash = (0, utils_2.getCommitHash)();
-            console.log(utils_1.context.payload);
             // if(board.closed) return c.setFailed("Oops! Board is closed.");
             // if(card.closed) return c.setFailed("Oops! Card is closed.");
             // const res = await postCardAttachment(
