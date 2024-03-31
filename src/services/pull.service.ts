@@ -21,7 +21,7 @@ export default async function () {
         const commits                   = getCommits({
             owner: getRepositoryOwner(),
             repo: getRepository(),
-            hash: context.payload.pull_request?.number,
+            pr_number: context.payload.pull_request?.number,
         });
         console.log(commits)
         const board                     = (await getBoard()).data as Board.Model;

@@ -3,7 +3,7 @@ import { octokit } from "../utils";
 
 export const getCommits = async (payload: Readonly<Github.Model>) => 
     await octokit.request(
-        `GET /repos/${payload.owner}/${payload.repo}/pulls/${payload.pull_number}/commits`,
+        `GET /repos/${payload.owner}/${payload.repo}/pulls/${payload.pr_number}/commits`,
         {
             owner: payload.owner,
             repo: payload.repo,

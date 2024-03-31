@@ -343,7 +343,7 @@ function default_1() {
             const commits = (0, github_repo_1.getCommits)({
                 owner: (0, utils_2.getRepositoryOwner)(),
                 repo: (0, utils_2.getRepository)(),
-                hash: (_a = utils_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number,
+                pr_number: (_a = utils_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number,
             });
             console.log(commits);
             const board = (yield (0, board_repo_1.getBoard)()).data;
@@ -7207,7 +7207,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getCommits = void 0;
 const utils_1 = __nccwpck_require__(314);
 const getCommits = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield utils_1.octokit.request(`GET /repos/${payload.owner}/${payload.repo}/pulls/${payload.pull_number}/commits`, {
+    return yield utils_1.octokit.request(`GET /repos/${payload.owner}/${payload.repo}/pulls/${payload.pr_number}/commits`, {
         owner: payload.owner,
         repo: payload.repo,
         pull_number: payload.pr_number,
