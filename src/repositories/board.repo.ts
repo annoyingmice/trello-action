@@ -19,10 +19,12 @@ export const getBoardLists = async () =>
         }
     );
 
-export const getCardFromBoardByNumber = async (number: number) =>
-    await fetch.get(
+export const getCardFromBoardByNumber = async (number: number) => {
+    console.log(`${base}/cards/${number}`)
+    return await fetch.get(
         `${base}/cards/${number}`, 
         {
             params: {},
         }
     );
+}

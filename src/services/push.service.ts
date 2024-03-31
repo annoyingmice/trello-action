@@ -7,6 +7,7 @@ export default async function () {
     try {
         const board                     = (await getBoard()).data as Board.Model;
         const cardNumber                = getCardNumber();
+        console.log(cardNumber);
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
         const currentCardListPosition   = (await getTheListACardIsIn(card.id)).data as List.Model;
         const boardLists                = (await getBoardLists()).data;

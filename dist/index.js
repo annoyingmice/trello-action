@@ -221,6 +221,7 @@ const getBoardLists = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.getBoardLists = getBoardLists;
 const getCardFromBoardByNumber = (number) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${base}/cards/${number}`);
     return yield axios_1.default.get(`${base}/cards/${number}`, {
         params: {},
     });
@@ -319,6 +320,7 @@ function default_1() {
         try {
             const board = (yield (0, board_repo_1.getBoard)()).data;
             const cardNumber = (0, utils_1.getCardNumber)();
+            console.log(cardNumber);
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
             const currentCardListPosition = (yield (0, card_repo_1.getTheListACardIsIn)(card.id)).data;
             const boardLists = (yield (0, board_repo_1.getBoardLists)()).data;
