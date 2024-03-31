@@ -6,10 +6,9 @@ import {
     GithubIssue 
 } from "./models";
 import { GH_TOKEN, octo } from "./models";
-import fetch from "./axios";
+import fetch from "node-fetch";
 
 export const context: GithubContext     = git.context;
-console.log(GH_TOKEN)
 export const octokit                    = new octo.Octokit({ request: { fetch }, auth: GH_TOKEN });
 
 export const getCommitMessage   = (): Readonly<string> => context.payload.head_commit.message;
