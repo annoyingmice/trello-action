@@ -2,7 +2,8 @@ import {
     context, 
     getCardNumber, 
     getCommitHash, 
-    getCommitMessage,
+    getCommitMessage, 
+    getListIndex, 
     getLists, 
     getRepository, 
     getRepositoryOwner, 
@@ -15,7 +16,8 @@ import {
 } from "../repositories/board.repo";
 import { 
     getTheListACardIsIn, 
-    postCardAttachment,
+    postCardAttachment, 
+    putCard 
 } from "../repositories/card.repo";
 import { 
     Board, 
@@ -42,7 +44,7 @@ export default async function () {
         if(boardLists.length !== lists.length) c.setFailed("Oops! Boards in .yml and trello mismatch.")
         if(!lists.includes(currentCardListPosition.name)) c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
 
-        const res = await postCardAttachment(
+        await postCardAttachment(
             card.id,
             {
                 name: commitMessage,
@@ -51,6 +53,17 @@ export default async function () {
                     repo,
                     hash,
                 })
+            }
+        );
+
+        const index = getListIndex(boardLists, currentCardListPosition.name);
+        if(!index) c.setFailed("Oops! Cannot find card in the list.");
+        const list = boardLists[index+1]; // move to next card
+
+        const res = await putCard(
+            card.id,
+            {
+                idList: list.id,
             }
         );
 

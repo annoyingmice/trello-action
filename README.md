@@ -20,12 +20,21 @@ Install/Enable trello power-up's in your trello board ```Card Numbers by Reenhan
 <br/>
 In github workflow file <code>.yml</code>
 ```yml
-name: Trello action
+name: Trello Action
+run-name: ${{ github.actor }} started running this task
+
 on:
   push:
     branches:
+      - feature/*
+      - hotfix/*
+      - release/*
+      - test/*
+  pull_request:
+    branches:
       - main
-      - "feature/*"
+      - development
+    types: [opened, closed]
 
 jobs:
   build:
@@ -33,11 +42,14 @@ jobs:
       steps:
         - uses: annoyingmice/trello-action@main
           with:
-            tr-key: xxx # Trello api key, visit https://trello.com/app-key
-            tr-token: xxx # Trello auth token, visit https://trello.com/app-key
-            tr-board: xxx # Trello board ID
-            tr-list: xxx # e.g 'Back Logs,Bugs,In Progress,For QA,Done'
-            gh-toke: xxx # github token Profile > settings > Developer Settings > Personal access tokens
+            # Trello api key, visit https://trello.com/app-key > Power-Up Admin Portal > Power-Ups and Integrations (New) > API Key > API Key (copy)
+            tr-key: ${{ secrets.TR_TOKEN }} # > Repository > Settings > Secrets and variables > Actions
+            # Trello auth token, visit https://trello.com/app-key > Power-Up Admin Portal > Power-Ups and Integrations (New) > API Key > API Key (copy) > Token
+            tr-token: ${{ secrets.TR_KEY }} # > Repository > Settings > Secrets and variables > Actions
+            tr-board: ${{ vars.TR_BOARD }} # Trello board ID
+            tr-list: "Back Logs,Bugs,In Progress,Review,QA,QA Done,Done" # e.g
+            # github token Profile > settings > Developer Settings > Personal access tokens
+            gh-toke: ${{ secrets.GH_TOKEN }} # > Repository > Settings > Secrets and variables > Actions
 ```
 <br/>
 Note: Please follow commit/comment(pull_request) format e.g "#card feat(docs)!: updated docs""
