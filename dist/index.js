@@ -428,20 +428,13 @@ function default_1() {
                 models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
             if (!lists.includes(currentCardListPosition.name))
                 models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
-            yield (0, card_repo_1.postCardAttachment)(card.id, {
+            const res = yield (0, card_repo_1.postCardAttachment)(card.id, {
                 name: commitMessage,
                 url: (0, utils_1.populateCommitUrl)({
                     owner,
                     repo,
                     hash,
                 })
-            });
-            const index = (0, utils_1.getListIndex)(boardLists, currentCardListPosition.name);
-            if (!index)
-                models_1.c.setFailed("Oops! Cannot find card in the list.");
-            const list = boardLists[index + 1]; // move to next card
-            const res = yield (0, card_repo_1.putCard)(card.id, {
-                idList: list.id,
             });
             models_1.c.setOutput('statusCode', res.status);
         }
