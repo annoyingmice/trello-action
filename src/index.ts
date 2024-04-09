@@ -2,7 +2,6 @@ import { c } from './models';
 import pullService from './services/pull.service';
 import pushService from './services/push.service';
 
-async function onPull() {}
 async function onPullReview() {}
 async function onPullReviewComment() {}
 async function onIssue() {}

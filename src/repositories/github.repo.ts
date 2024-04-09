@@ -10,3 +10,11 @@ export const getCommits = async (payload: Readonly<Github.Model>) =>
             pull_number: payload.pr_number,
         }
     )
+export const getMainBranch = async (payload: Readonly<Github.Model>) =>
+    await octokit.request(
+        `GET /repos/${payload.owner}/${payload.repo}`,
+        {
+            owner: payload.owner,
+            repo: payload.repo,
+        }
+    )

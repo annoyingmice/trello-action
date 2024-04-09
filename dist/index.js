@@ -57,9 +57,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const models_1 = __nccwpck_require__(3513);
 const pull_service_1 = __importDefault(__nccwpck_require__(6270));
 const push_service_1 = __importDefault(__nccwpck_require__(839));
-function onPull() {
-    return __awaiter(this, void 0, void 0, function* () { });
-}
 function onPullReview() {
     return __awaiter(this, void 0, void 0, function* () { });
 }
@@ -185,7 +182,7 @@ exports.octo = octokit;
 exports.TR_API_KEY = core.getInput(`tr-key`, { required: true });
 exports.TR_API_TOKEN = core.getInput(`tr-token`, { required: true });
 exports.TR_BOARD = core.getInput(`tr-board`, { required: true });
-exports.TR_LISTS = core.getInput(`tr-list`) || 'Back Logs,Bugs,In Progress,For QA,Done';
+exports.TR_LISTS = core.getInput(`tr-list`) || 'Back Logs,Bugs,In Progress,Review,For QA,Done';
 exports.GH_TOKEN = core.getInput(`gh-token`, { required: true });
 
 
@@ -329,7 +326,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const github_repo_1 = __nccwpck_require__(2);
+const github_repo_1 = __nccwpck_require__(7002);
 const models_1 = __nccwpck_require__(3513);
 const board_repo_1 = __nccwpck_require__(1113);
 const card_repo_1 = __nccwpck_require__(3564);
@@ -353,11 +350,22 @@ function default_1() {
             const repo = (0, utils_2.getRepository)();
             const owner = (0, utils_2.getRepositoryOwner)();
             const hash = (0, utils_2.getCommitHash)();
+            const boardLists = (yield (0, board_repo_1.getBoardLists)()).data;
+            const lists = (0, utils_1.getLists)();
+            const currentCardListPosition = (yield (0, card_repo_1.getTheListACardIsIn)(card.id)).data;
             if (board.closed)
-                return models_1.c.setFailed("Oops! Board is closed.");
+                models_1.c.setFailed("Oops! Board is closed.");
             if (card.closed)
-                return models_1.c.setFailed("Oops! Card is closed.");
-            const res = yield (0, card_repo_1.postCardAttachment)(card.id, {
+                models_1.c.setFailed("Oops! Card is closed.");
+            if (boardLists.length !== lists.length)
+                models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
+            if (!lists.includes(currentCardListPosition.name))
+                models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
+            const index = (0, utils_1.getListIndex)(boardLists, currentCardListPosition.name);
+            if (!index)
+                models_1.c.setFailed("Oops! Cannot find card in the list.");
+            const list = boardLists[index + 1]; // next card
+            yield (0, card_repo_1.postCardAttachment)(card.id, {
                 name: commitMessage,
                 url: (0, utils_2.populateCommitUrl)({
                     owner,
@@ -365,7 +373,10 @@ function default_1() {
                     hash,
                 })
             });
-            // c.setOutput('statusCode', res.status);
+            const res = yield (0, card_repo_1.putCard)(card.id, {
+                idList: list.id,
+            });
+            models_1.c.setOutput('statusCode', res.status);
         }
         catch (err) {
             models_1.c.setFailed(err);
@@ -410,27 +421,20 @@ function default_1() {
             const owner = (0, utils_1.getRepositoryOwner)();
             const hash = (0, utils_1.getCommitHash)();
             if (board.closed)
-                return models_1.c.setFailed("Oops! Board is closed.");
+                models_1.c.setFailed("Oops! Board is closed.");
             if (card.closed)
-                return models_1.c.setFailed("Oops! Card is closed.");
+                models_1.c.setFailed("Oops! Card is closed.");
             if (boardLists.length !== lists.length)
-                return models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
+                models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
             if (!lists.includes(currentCardListPosition.name))
-                return models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
-            yield (0, card_repo_1.postCardAttachment)(card.id, {
+                models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
+            const res = yield (0, card_repo_1.postCardAttachment)(card.id, {
                 name: commitMessage,
                 url: (0, utils_1.populateCommitUrl)({
                     owner,
                     repo,
                     hash,
                 })
-            });
-            const index = (0, utils_1.getListIndex)(boardLists, currentCardListPosition.name);
-            if (!index)
-                return models_1.c.setFailed("Oops! Cannot find card in the list.");
-            const list = boardLists[index + 1]; // move to next card
-            const res = yield (0, card_repo_1.putCard)(card.id, {
-                idList: list.id,
             });
             models_1.c.setOutput('statusCode', res.status);
         }
@@ -456,7 +460,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
 const models_1 = __nccwpck_require__(3513);
 const models_2 = __nccwpck_require__(3513);
-const node_fetch_1 = __importDefault(__nccwpck_require__(429));
+const node_fetch_1 = __importDefault(__nccwpck_require__(4429));
 exports.context = models_1.git.context;
 exports.octokit = new models_2.octo.Octokit({ request: { fetch: node_fetch_1.default }, auth: models_2.GH_TOKEN });
 const getCommitMessage = () => exports.context.payload.head_commit.message;
@@ -6022,14 +6026,14 @@ function populateMaps (extensions, types) {
 
 /***/ }),
 
-/***/ 760:
+/***/ 7760:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /*! node-domexception. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
 
 if (!globalThis.DOMException) {
   try {
-    const { MessageChannel } = __nccwpck_require__(267),
+    const { MessageChannel } = __nccwpck_require__(1267),
     port = new MessageChannel().port1,
     ab = new ArrayBuffer()
     port.postMessage(ab, [ab, ab])
@@ -7087,7 +7091,7 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 452:
+/***/ 1452:
 /***/ (function(__unused_webpack_module, exports) {
 
 /**
@@ -11830,7 +11834,7 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 118:
+/***/ 1118:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -11850,7 +11854,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 
-/***/ 206:
+/***/ 8206:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -11860,7 +11864,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 
-/***/ 859:
+/***/ 2859:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -11893,23 +11897,23 @@ exports.GH_TOKEN = exports.TR_LISTS = exports.TR_BOARD = exports.TR_API_TOKEN = 
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const octokit = __importStar(__nccwpck_require__(8570));
-exports.Board = __importStar(__nccwpck_require__(118));
-exports.List = __importStar(__nccwpck_require__(950));
+exports.Board = __importStar(__nccwpck_require__(1118));
+exports.List = __importStar(__nccwpck_require__(2950));
 exports.Card = __importStar(__nccwpck_require__(470));
-exports.Github = __importStar(__nccwpck_require__(206));
+exports.Github = __importStar(__nccwpck_require__(8206));
 exports.git = github;
 exports.c = core;
 exports.octo = octokit;
 exports.TR_API_KEY = core.getInput(`tr-key`, { required: true });
 exports.TR_API_TOKEN = core.getInput(`tr-token`, { required: true });
 exports.TR_BOARD = core.getInput(`tr-board`, { required: true });
-exports.TR_LISTS = core.getInput(`tr-list`) || 'Back Logs,Bugs,In Progress,For QA,Done';
+exports.TR_LISTS = core.getInput(`tr-list`) || 'Back Logs,Bugs,In Progress,Review,For QA,Done';
 exports.GH_TOKEN = core.getInput(`gh-token`, { required: true });
 
 
 /***/ }),
 
-/***/ 950:
+/***/ 2950:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -11919,7 +11923,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 
 /***/ }),
 
-/***/ 2:
+/***/ 7002:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -11934,8 +11938,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getCommits = void 0;
-const utils_1 = __nccwpck_require__(314);
+exports.getMainBranch = exports.getCommits = void 0;
+const utils_1 = __nccwpck_require__(1314);
 const getCommits = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     return yield utils_1.octokit.request(`GET /repos/${payload.owner}/${payload.repo}/pulls/${payload.pr_number}/commits`, {
         owner: payload.owner,
@@ -11944,11 +11948,18 @@ const getCommits = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.getCommits = getCommits;
+const getMainBranch = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield utils_1.octokit.request(`GET /repos/${payload.owner}/${payload.repo}`, {
+        owner: payload.owner,
+        repo: payload.repo,
+    });
+});
+exports.getMainBranch = getMainBranch;
 
 
 /***/ }),
 
-/***/ 314:
+/***/ 1314:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -11958,9 +11969,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
-const models_1 = __nccwpck_require__(859);
-const models_2 = __nccwpck_require__(859);
-const node_fetch_1 = __importDefault(__nccwpck_require__(429));
+const models_1 = __nccwpck_require__(2859);
+const models_2 = __nccwpck_require__(2859);
+const node_fetch_1 = __importDefault(__nccwpck_require__(4429));
 exports.context = models_1.git.context;
 exports.octokit = new models_2.octo.Octokit({ request: { fetch: node_fetch_1.default }, auth: models_2.GH_TOKEN });
 const getCommitMessage = () => exports.context.payload.head_commit.message;
@@ -12011,7 +12022,7 @@ module.exports = require("assert");
 
 /***/ }),
 
-/***/ 300:
+/***/ 4300:
 /***/ ((module) => {
 
 "use strict";
@@ -12067,7 +12078,7 @@ module.exports = require("net");
 
 /***/ }),
 
-/***/ 742:
+/***/ 7742:
 /***/ ((module) => {
 
 "use strict";
@@ -12075,7 +12086,7 @@ module.exports = require("node:process");
 
 /***/ }),
 
-/***/ 477:
+/***/ 2477:
 /***/ ((module) => {
 
 "use strict";
@@ -12131,7 +12142,7 @@ module.exports = require("util");
 
 /***/ }),
 
-/***/ 267:
+/***/ 1267:
 /***/ ((module) => {
 
 "use strict";
@@ -16509,7 +16520,7 @@ module.exports = axios;
 
 /***/ }),
 
-/***/ 572:
+/***/ 8572:
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
 
 /* c8 ignore start */
@@ -16521,11 +16532,11 @@ if (!globalThis.ReadableStream) {
   // and it's preferred over the polyfilled version. So we also
   // suppress the warning that gets emitted by NodeJS for using it.
   try {
-    const process = __nccwpck_require__(742)
+    const process = __nccwpck_require__(7742)
     const { emitWarning } = process
     try {
       process.emitWarning = () => {}
-      Object.assign(globalThis, __nccwpck_require__(477))
+      Object.assign(globalThis, __nccwpck_require__(2477))
       process.emitWarning = emitWarning
     } catch (error) {
       process.emitWarning = emitWarning
@@ -16533,14 +16544,14 @@ if (!globalThis.ReadableStream) {
     }
   } catch (error) {
     // fallback to polyfill implementation
-    Object.assign(globalThis, __nccwpck_require__(452))
+    Object.assign(globalThis, __nccwpck_require__(1452))
   }
 }
 
 try {
   // Don't use node: prefix for this, require+node: is not supported until node v14.14
   // Only `import()` can use prefix in 12.20 and later
-  const { Blob } = __nccwpck_require__(300)
+  const { Blob } = __nccwpck_require__(4300)
   if (Blob && !Blob.prototype.stream) {
     Blob.prototype.stream = function name (params) {
       let position = 0
@@ -17653,7 +17664,7 @@ class Octokit {
 
 /***/ }),
 
-/***/ 213:
+/***/ 3213:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -17661,7 +17672,7 @@ class Octokit {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* unused harmony export File */
-/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(410);
+/* harmony import */ var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(1410);
 
 
 const _File = class File extends _index_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z {
@@ -17715,7 +17726,7 @@ const File = _File
 
 /***/ }),
 
-/***/ 777:
+/***/ 2777:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -17737,11 +17748,11 @@ const external_node_fs_namespaceObject = require("node:fs");
 ;// CONCATENATED MODULE: external "node:path"
 const external_node_path_namespaceObject = require("node:path");
 // EXTERNAL MODULE: ./node_modules/node-domexception/index.js
-var node_domexception = __nccwpck_require__(760);
+var node_domexception = __nccwpck_require__(7760);
 // EXTERNAL MODULE: ./node_modules/fetch-blob/file.js
-var file = __nccwpck_require__(213);
+var file = __nccwpck_require__(3213);
 // EXTERNAL MODULE: ./node_modules/fetch-blob/index.js
-var fetch_blob = __nccwpck_require__(410);
+var fetch_blob = __nccwpck_require__(1410);
 ;// CONCATENATED MODULE: ./node_modules/fetch-blob/from.js
 
 
@@ -17847,7 +17858,7 @@ class BlobDataItem {
 
 /***/ }),
 
-/***/ 410:
+/***/ 1410:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -17855,7 +17866,7 @@ class BlobDataItem {
 /* harmony export */   "Z": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* unused harmony export Blob */
-/* harmony import */ var _streams_cjs__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(572);
+/* harmony import */ var _streams_cjs__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(8572);
 /*! fetch-blob. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
 
 // TODO (jimmywarting): in the feature use conditional loading with top level await (requires 14.x)
@@ -18110,7 +18121,7 @@ const Blob = _Blob
 
 /***/ }),
 
-/***/ 10:
+/***/ 8010:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -18119,8 +18130,8 @@ const Blob = _Blob
 /* harmony export */   "au": () => (/* binding */ formDataToBlob)
 /* harmony export */ });
 /* unused harmony export File */
-/* harmony import */ var fetch_blob__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(410);
-/* harmony import */ var fetch_blob_file_js__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(213);
+/* harmony import */ var fetch_blob__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(1410);
+/* harmony import */ var fetch_blob_file_js__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(3213);
 /*! formdata-polyfill. MIT License. Jimmy Wärting <https://jimmy.warting.se/opensource> */
 
 
@@ -18165,7 +18176,7 @@ return new B(c,{type:"multipart/form-data; boundary="+b})}
 
 /***/ }),
 
-/***/ 429:
+/***/ 4429:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 "use strict";
@@ -18257,9 +18268,9 @@ function dataUriToBuffer(uri) {
 ;// CONCATENATED MODULE: external "node:util"
 const external_node_util_namespaceObject = require("node:util");
 // EXTERNAL MODULE: ./node_modules/fetch-blob/index.js
-var fetch_blob = __nccwpck_require__(410);
+var fetch_blob = __nccwpck_require__(1410);
 // EXTERNAL MODULE: ./node_modules/formdata-polyfill/esm.min.js
-var esm_min = __nccwpck_require__(10);
+var esm_min = __nccwpck_require__(8010);
 ;// CONCATENATED MODULE: ./node_modules/node-fetch/src/errors/base.js
 class FetchBaseError extends Error {
 	constructor(message, type) {
@@ -18520,7 +18531,7 @@ class Body {
 			return formData;
 		}
 
-		const {toFormData} = await __nccwpck_require__.e(/* import() */ 37).then(__nccwpck_require__.bind(__nccwpck_require__, 37));
+		const {toFormData} = await __nccwpck_require__.e(/* import() */ 37).then(__nccwpck_require__.bind(__nccwpck_require__, 4037));
 		return toFormData(this.body, ct);
 	}
 
@@ -19922,7 +19933,7 @@ class AbortError extends FetchBaseError {
 }
 
 // EXTERNAL MODULE: ./node_modules/fetch-blob/from.js + 2 modules
-var from = __nccwpck_require__(777);
+var from = __nccwpck_require__(2777);
 ;// CONCATENATED MODULE: ./node_modules/node-fetch/src/index.js
 /**
  * Index.js
