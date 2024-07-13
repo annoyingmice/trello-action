@@ -16,11 +16,12 @@ inputs:
   tr-board:
     description: Trello board ID
     required: true
-  tr-action:
-    description: Trello card action, an array of the following ["comment", "attach", "move"] or a single action
-    required: true
-  tr-move-to:
+  tr-list:
     description: Trello list name one of the follow depends what list was defined in your trello ["To do", "Blocked", "Rework", "Progress", "QA", "Done"]
+    required: true
+  gh-token:
+    description: Github toke can be generated here https://github.com/settings/tokens with permission repo
+    required: true
 
 runs:
     using: node16
