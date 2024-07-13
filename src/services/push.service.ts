@@ -21,13 +21,14 @@ import {
     Board, 
     Card, 
     List, 
+    git,
     c 
 } from "../models";
 
 export default async function () {
     try {
         const board                     = (await getBoard()).data as Board.Model;
-        const cardNumber                = getCardNumber(context.payload.head_commit.message);
+        const cardNumber                = getCardNumber(git.context.ref.replace('refs/heads/', ''));
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
         const currentCardListPosition   = (await getTheListACardIsIn(card.id)).data as List.Model;
         const boardLists                = (await getBoardLists()).data;

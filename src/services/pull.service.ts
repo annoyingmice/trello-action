@@ -39,7 +39,7 @@ export default async function () {
 
         const commitMessage             = commits.data[commits.data.length-1].commit.message;
         const board                     = (await getBoard()).data as Board.Model;
-        const cardNumber                = getCardNumber(git.context.ref);
+        const cardNumber                = getCardNumber(git.context.ref.replace('refs/heads/', ''));
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
         const repo                      = getRepository();
         const owner                     = getRepositoryOwner();
