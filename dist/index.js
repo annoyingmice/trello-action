@@ -11976,7 +11976,7 @@ exports.context = models_1.git.context;
 exports.octokit = new models_2.octo.Octokit({ request: { fetch: node_fetch_1.default }, auth: models_2.GH_TOKEN });
 const getCommitMessage = () => exports.context.payload.head_commit.message;
 exports.getCommitMessage = getCommitMessage;
-const getCardNumber = (commit) => { var _a, _b; return ((_b = (_a = commit === null || commit === void 0 ? void 0 : commit.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : -1); };
+const getCardNumber = (payload) => { var _a, _b; return ((_b = (_a = payload === null || payload === void 0 ? void 0 : payload.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : -1); };
 exports.getCardNumber = getCardNumber;
 const getActionType = () => exports.context.payload.action;
 exports.getActionType = getActionType;
