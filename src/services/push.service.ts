@@ -38,10 +38,10 @@ export default async function () {
         const owner                     = getRepositoryOwner();
         const hash                      = getCommitHash();
 
-        if(board.closed) c.setFailed("Oops! Board is closed.");
-        if(card.closed) c.setFailed("Oops! Card is closed.");
-        if(boardLists.length !== lists.length) c.setFailed("Oops! Boards in .yml and trello mismatch.")
-        if(!lists.includes(currentCardListPosition.name)) c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
+        if(board.closed) return c.setFailed("Oops! Board is closed.");
+        if(card.closed) return c.setFailed("Oops! Card is closed.");
+        if(boardLists.length !== lists.length) return c.setFailed("Oops! Boards in .yml and trello mismatch.")
+        if(!lists.includes(currentCardListPosition.name)) return c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
 
         const resPostCard = await postCardComment(
             card.id,
@@ -59,7 +59,7 @@ export default async function () {
             throw new Error(resPostCard.data);
         }
 
-        c.setOutput('statusCode', resPostCard.status);
+        return c.setOutput('statusCode', resPostCard.status);
 
     } catch (err) {
         console.log('Error: ', JSON.stringify(err));
