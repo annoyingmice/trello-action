@@ -52,7 +52,9 @@ jobs:
             gh-toke: ${{ secrets.GH_TOKEN }} # > Repository > Settings > Secrets and variables > Actions
 ```
 <br/>
-Note: Please follow commit/comment(pull_request) format e.g "#card feat(docs)!: updated docs""
+Note: Please follow this formats carefully
+- commit: "#card feat(docs)!: updated docs""
+- branch: "feat/*-{card_number}"
 
 ## Contributing
 
