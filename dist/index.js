@@ -373,13 +373,13 @@ function default_1() {
                     hash,
                 })
             });
-            if (resPostCard.status == 400) {
+            if (resPostCard.status != 200) {
                 throw new Error(resPostCard.data);
             }
             const res = yield (0, card_repo_1.putCard)(card.id, {
                 idList: list.id,
             });
-            if (res.status == 400) {
+            if (res.status != 200) {
                 throw new Error(res.data);
             }
             models_1.c.setOutput('statusCode', res.status);
@@ -444,7 +444,7 @@ function default_1() {
                     hash,
                 })
             });
-            if (resPostCard.status == 400) {
+            if (resPostCard.status != 200) {
                 throw new Error(resPostCard.data);
             }
             models_1.c.setOutput('statusCode', resPostCard.status);

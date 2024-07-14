@@ -55,7 +55,7 @@ export default async function () {
             }
         );
 
-        if(resPostCard.status == 400) {
+        if(resPostCard.status != 200) {
             throw new Error(resPostCard.data);
         }
 
