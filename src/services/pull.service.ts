@@ -37,7 +37,7 @@ export default async function () {
             pr_number:  context.payload.pull_request?.number,
         });
         
-        const branch                    = git.context.ref.replace('refs/heads/', '');
+        const branch                    = git.context.payload.pull_request?.head.ref;
         const commitMessage             = commits.data[commits.data.length-1].commit.message;
         const board                     = (await getBoard()).data as Board.Model;
         const cardNumber                = getCardNumber(branch);

@@ -333,7 +333,7 @@ const utils_1 = __nccwpck_require__(1698);
 const utils_2 = __nccwpck_require__(1698);
 function default_1() {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a;
+        var _a, _b;
         // if target branch is the default branch
         // move card to done
         try {
@@ -342,7 +342,7 @@ function default_1() {
                 repo: (0, utils_2.getRepository)(),
                 pr_number: (_a = utils_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number,
             });
-            const branch = models_1.git.context.ref.replace('refs/heads/', '');
+            const branch = (_b = models_1.git.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.head.ref;
             const commitMessage = commits.data[commits.data.length - 1].commit.message;
             const board = (yield (0, board_repo_1.getBoard)()).data;
             const cardNumber = (0, utils_2.getCardNumber)(branch);
