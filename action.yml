@@ -1,4 +1,3 @@
-# commit pattern [<#card>] (branch) <type>(optional): <message>
 author: annoyingmice
 name: trello-action
 description: GitHub Action -> Trello
@@ -24,5 +23,5 @@ inputs:
     required: true
 
 runs:
-    using: node16
+    using: node20
     main: 'dist/index.js'

@@ -13,6 +13,7 @@ export const octokit                    = new octo.Octokit({ request: { fetch },
 
 export const getCommitMessage   = (): Readonly<string> => context.payload.head_commit.message;
 export const getCardNumber      = (payload: string): Readonly<number> => (payload?.match(/\d+/g)?.[0] ?? -1) as Readonly<number>;
+export const getCardNumbers     = (payload: string): Readonly<number[]> => payload?.match(/\d+/g)?.map(item => Number(item)) as number[];
 export const getActionType      = (): Readonly<ActionTypes> => <ActionTypes>context.payload.action;
 export const getOwner           = (): Readonly<string> => context.payload.commits[0].author.username;
 export const getRepository      = (): Readonly<string> => context.repo.repo;
@@ -26,3 +27,4 @@ export const getLists           = (): Readonly<string[]> => TR_LISTS.split(',');
 export const populateCommitUrl  = (payload: any): Readonly<string> => `https://github.com/${payload.owner}/${payload.repo}/commit/${payload.hash}`;
 export const getListIndex       = (lists: any[], target: string): Readonly<number> => lists.map(item => item.name).indexOf(target);
 export const isMain             = (target: string): Readonly<boolean> => /^main\b/.test(target);
+export const isDevelop          = (target: string): Readonly<boolean> => /^(develop|development)\b/.test(target);

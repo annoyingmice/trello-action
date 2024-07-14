@@ -16,16 +16,48 @@ import {
 import { getTheListACardIsIn, postCardComment, putCard } from "../repositories/card.repo";
 import { 
     context, 
+    getCardNumbers, 
     getListIndex, 
     getLists,
+    isMain,
 } from "../utils"
-import { 
-    getCardNumber,
+import {
     getRepository, 
     getRepositoryOwner, 
     getCommitHash, 
     populateCommitUrl,
 } from "../utils";
+
+async function process (payload: { [key: string]: string }) {
+    const resPostCard = await postCardComment(
+        payload.card,
+        {
+            name: payload.commitMessage,
+            url: populateCommitUrl({
+                owner: payload.owner,
+                repo: payload.repo,
+                hash: payload.hash,
+            })
+        }
+    );
+
+    if(resPostCard.status != 200) {
+        throw new Error(resPostCard.data);
+    }
+
+    const res = await putCard(
+        payload.card,
+        {
+            idList: payload.list,
+        }
+    );
+
+    if(res.status != 200) {
+        throw new Error(res.data);
+    }
+
+    c.setOutput('statusCode', res.status);
+}
 
 export default async function () {
   // if target branch is the default branch
@@ -38,55 +70,40 @@ export default async function () {
         });
         
         const pull_request              = git.context.payload.pull_request;
-        const branch                    = pull_request?.head.ref;
+        const pr_body                   = pull_request?.body as string;
         const commitMessage             = commits.data[commits.data.length-1].commit.message;
+
         const board                     = (await getBoard()).data as Board.Model;
-        const cardNumber                = getCardNumber(branch);
-        const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
+        
+        const cardNumbers               = getCardNumbers(pr_body);
         const repo                      = getRepository();
         const owner                     = getRepositoryOwner();
         const hash                      = getCommitHash();
         const boardLists                = (await getBoardLists()).data;
         const lists                     = getLists();
-        const currentCardListPosition   = (await getTheListACardIsIn(card.id)).data as List.Model;
         
         if(board.closed) c.setFailed("Oops! Board is closed.");
-        if(card.closed) c.setFailed("Oops! Card is closed.");
-        if(boardLists.length !== lists.length) c.setFailed("Oops! Boards in .yml and trello mismatch.")
-        if(!lists.includes(currentCardListPosition.name)) c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
-        
-        const index = getListIndex(boardLists, currentCardListPosition.name);
-        if(!index) c.setFailed("Oops! Cannot find card in the list.");
-        const list = boardLists[index+1]; // next card
+        if(boardLists.length !== lists.length) c.setFailed("Oops! Boards in .yml and trello mismatch.");
 
-        const resPostCard = await postCardComment(
-            card.id,
-            {
-                name: commitMessage,
-                url: populateCommitUrl({
-                    owner,
-                    repo,
-                    hash,
-                })
-            }
-        );
+        cardNumbers.forEach(async card => {
+            const model = (await getCardFromBoardByNumber(card)).data as Card.Model;
+            const position = (await getTheListACardIsIn(model.id)).data as List.Model;
+            const index = getListIndex(boardLists, position.name);
+            const list = boardLists[index+1]; // next card
 
-        if(resPostCard.status != 200) {
-            throw new Error(resPostCard.data);
-        }
+            if(model.closed) c.setFailed("Oops! Card is closed.");
+            if(!lists.includes(position.name)) c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
+            if(!index) c.setFailed("Oops! Cannot find card in the list.");
 
-        const res = await putCard(
-            card.id,
-            {
-                idList: list.id,
-            }
-        );
-
-        if(res.status != 200) {
-            throw new Error(res.data);
-        }
-
-        c.setOutput('statusCode', res.status);
+            await process({
+                card: model.id,
+                commitMessage,
+                owner,
+                repo,
+                hash,
+                list: list.id,
+            });
+        });
 
     } catch (err) {
         console.log('Error: ', JSON.stringify(err));

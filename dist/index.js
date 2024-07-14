@@ -331,6 +331,28 @@ const board_repo_1 = __nccwpck_require__(1113);
 const card_repo_1 = __nccwpck_require__(3564);
 const utils_1 = __nccwpck_require__(1698);
 const utils_2 = __nccwpck_require__(1698);
+function process(payload) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const resPostCard = yield (0, card_repo_1.postCardComment)(payload.card, {
+            name: payload.commitMessage,
+            url: (0, utils_2.populateCommitUrl)({
+                owner: payload.owner,
+                repo: payload.repo,
+                hash: payload.hash,
+            })
+        });
+        if (resPostCard.status != 200) {
+            throw new Error(resPostCard.data);
+        }
+        const res = yield (0, card_repo_1.putCard)(payload.card, {
+            idList: payload.list,
+        });
+        if (res.status != 200) {
+            throw new Error(res.data);
+        }
+        models_1.c.setOutput('statusCode', res.status);
+    });
+}
 function default_1() {
     return __awaiter(this, void 0, void 0, function* () {
         var _a;
@@ -343,47 +365,39 @@ function default_1() {
                 pr_number: (_a = utils_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number,
             });
             const pull_request = models_1.git.context.payload.pull_request;
-            const branch = pull_request === null || pull_request === void 0 ? void 0 : pull_request.head.ref;
+            const pr_body = pull_request === null || pull_request === void 0 ? void 0 : pull_request.body;
             const commitMessage = commits.data[commits.data.length - 1].commit.message;
             const board = (yield (0, board_repo_1.getBoard)()).data;
-            const cardNumber = (0, utils_2.getCardNumber)(branch);
-            const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
+            const cardNumbers = (0, utils_1.getCardNumbers)(pr_body);
             const repo = (0, utils_2.getRepository)();
             const owner = (0, utils_2.getRepositoryOwner)();
             const hash = (0, utils_2.getCommitHash)();
             const boardLists = (yield (0, board_repo_1.getBoardLists)()).data;
             const lists = (0, utils_1.getLists)();
-            const currentCardListPosition = (yield (0, card_repo_1.getTheListACardIsIn)(card.id)).data;
             if (board.closed)
                 models_1.c.setFailed("Oops! Board is closed.");
-            if (card.closed)
-                models_1.c.setFailed("Oops! Card is closed.");
             if (boardLists.length !== lists.length)
                 models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
-            if (!lists.includes(currentCardListPosition.name))
-                models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
-            const index = (0, utils_1.getListIndex)(boardLists, currentCardListPosition.name);
-            if (!index)
-                models_1.c.setFailed("Oops! Cannot find card in the list.");
-            const list = boardLists[index + 1]; // next card
-            const resPostCard = yield (0, card_repo_1.postCardComment)(card.id, {
-                name: commitMessage,
-                url: (0, utils_2.populateCommitUrl)({
+            cardNumbers.forEach((card) => __awaiter(this, void 0, void 0, function* () {
+                const model = (yield (0, board_repo_1.getCardFromBoardByNumber)(card)).data;
+                const position = (yield (0, card_repo_1.getTheListACardIsIn)(model.id)).data;
+                const index = (0, utils_1.getListIndex)(boardLists, position.name);
+                const list = boardLists[index + 1]; // next card
+                if (model.closed)
+                    models_1.c.setFailed("Oops! Card is closed.");
+                if (!lists.includes(position.name))
+                    models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
+                if (!index)
+                    models_1.c.setFailed("Oops! Cannot find card in the list.");
+                yield process({
+                    card: model.id,
+                    commitMessage,
                     owner,
                     repo,
                     hash,
-                })
-            });
-            if (resPostCard.status != 200) {
-                throw new Error(resPostCard.data);
-            }
-            const res = yield (0, card_repo_1.putCard)(card.id, {
-                idList: list.id,
-            });
-            if (res.status != 200) {
-                throw new Error(res.data);
-            }
-            models_1.c.setOutput('statusCode', res.status);
+                    list: list.id,
+                });
+            }));
         }
         catch (err) {
             console.log('Error: ', JSON.stringify(err));
@@ -470,7 +484,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isMain = exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
+exports.isDevelop = exports.isMain = exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumbers = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
 const models_1 = __nccwpck_require__(3513);
 const models_2 = __nccwpck_require__(3513);
 const node_fetch_1 = __importDefault(__nccwpck_require__(4429));
@@ -480,6 +494,8 @@ const getCommitMessage = () => exports.context.payload.head_commit.message;
 exports.getCommitMessage = getCommitMessage;
 const getCardNumber = (payload) => { var _a, _b; return ((_b = (_a = payload === null || payload === void 0 ? void 0 : payload.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : -1); };
 exports.getCardNumber = getCardNumber;
+const getCardNumbers = (payload) => { var _a; return (_a = payload === null || payload === void 0 ? void 0 : payload.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a.map(item => Number(item)); };
+exports.getCardNumbers = getCardNumbers;
 const getActionType = () => exports.context.payload.action;
 exports.getActionType = getActionType;
 const getOwner = () => exports.context.payload.commits[0].author.username;
@@ -506,6 +522,8 @@ const getListIndex = (lists, target) => lists.map(item => item.name).indexOf(tar
 exports.getListIndex = getListIndex;
 const isMain = (target) => /^main\b/.test(target);
 exports.isMain = isMain;
+const isDevelop = (target) => /^(develop|development)\b/.test(target);
+exports.isDevelop = isDevelop;
 
 
 /***/ }),
@@ -11983,7 +12001,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isMain = exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
+exports.isDevelop = exports.isMain = exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumbers = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
 const models_1 = __nccwpck_require__(2859);
 const models_2 = __nccwpck_require__(2859);
 const node_fetch_1 = __importDefault(__nccwpck_require__(4429));
@@ -11993,6 +12011,8 @@ const getCommitMessage = () => exports.context.payload.head_commit.message;
 exports.getCommitMessage = getCommitMessage;
 const getCardNumber = (payload) => { var _a, _b; return ((_b = (_a = payload === null || payload === void 0 ? void 0 : payload.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : -1); };
 exports.getCardNumber = getCardNumber;
+const getCardNumbers = (payload) => { var _a; return (_a = payload === null || payload === void 0 ? void 0 : payload.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a.map(item => Number(item)); };
+exports.getCardNumbers = getCardNumbers;
 const getActionType = () => exports.context.payload.action;
 exports.getActionType = getActionType;
 const getOwner = () => exports.context.payload.commits[0].author.username;
@@ -12019,6 +12039,8 @@ const getListIndex = (lists, target) => lists.map(item => item.name).indexOf(tar
 exports.getListIndex = getListIndex;
 const isMain = (target) => /^main\b/.test(target);
 exports.isMain = isMain;
+const isDevelop = (target) => /^(develop|development)\b/.test(target);
+exports.isDevelop = isDevelop;
 
 
 /***/ }),
