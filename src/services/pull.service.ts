@@ -82,8 +82,8 @@ export default async function () {
         const boardLists                = (await getBoardLists()).data;
         const lists                     = getLists();
         
-        if(board.closed) c.setFailed("Oops! Board is closed.");
-        if(boardLists.length !== lists.length) c.setFailed("Oops! Boards in .yml and trello mismatch.");
+        if(board.closed) return c.setFailed("Oops! Board is closed.");
+        if(boardLists.length !== lists.length) return c.setFailed("Oops! Boards in .yml and trello mismatch.");
 
         cardNumbers.forEach(async card => {
             const model = (await getCardFromBoardByNumber(card)).data as Card.Model;
@@ -91,9 +91,9 @@ export default async function () {
             const index = getListIndex(boardLists, position.name);
             const list = boardLists[index+1]; // next card
 
-            if(model.closed) c.setFailed("Oops! Card is closed.");
-            if(!lists.includes(position.name)) c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
-            if(!index) c.setFailed("Oops! Cannot find card in the list.");
+            if(model.closed) return c.setFailed("Oops! Card is closed.");
+            if(!lists.includes(position.name)) return c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
+            if(!index) return c.setFailed("Oops! Cannot find card in the list.");
 
             await process({
                 card: model.id,

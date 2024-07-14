@@ -375,20 +375,20 @@ function default_1() {
             const boardLists = (yield (0, board_repo_1.getBoardLists)()).data;
             const lists = (0, utils_1.getLists)();
             if (board.closed)
-                models_1.c.setFailed("Oops! Board is closed.");
+                return models_1.c.setFailed("Oops! Board is closed.");
             if (boardLists.length !== lists.length)
-                models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
+                return models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
             cardNumbers.forEach((card) => __awaiter(this, void 0, void 0, function* () {
                 const model = (yield (0, board_repo_1.getCardFromBoardByNumber)(card)).data;
                 const position = (yield (0, card_repo_1.getTheListACardIsIn)(model.id)).data;
                 const index = (0, utils_1.getListIndex)(boardLists, position.name);
                 const list = boardLists[index + 1]; // next card
                 if (model.closed)
-                    models_1.c.setFailed("Oops! Card is closed.");
+                    return models_1.c.setFailed("Oops! Card is closed.");
                 if (!lists.includes(position.name))
-                    models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
+                    return models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
                 if (!index)
-                    models_1.c.setFailed("Oops! Cannot find card in the list.");
+                    return models_1.c.setFailed("Oops! Cannot find card in the list.");
                 yield process({
                     card: model.id,
                     commitMessage,
