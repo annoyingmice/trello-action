@@ -263,7 +263,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.postCardComment = exports.postCardAttachment = exports.putCard = exports.getTheListACardIsIn = exports.updateChecklist = exports.getChecklist = exports.getCard = void 0;
 const axios_1 = __importDefault(__nccwpck_require__(7241));
-const models_1 = __nccwpck_require__(3513);
 const getCard = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.get(`/cards/${id}`, {
         params: {}
@@ -304,7 +303,7 @@ exports.postCardAttachment = postCardAttachment;
 const postCardComment = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     return yield axios_1.default.post(`/cards/${id}/actions/comments`, {
         text: String(`[${payload.url}] ${payload.name}`)
-    }).catch(error => models_1.c.setFailed(error));
+    });
 });
 exports.postCardComment = postCardComment;
 
@@ -366,7 +365,7 @@ function default_1() {
             if (!index)
                 models_1.c.setFailed("Oops! Cannot find card in the list.");
             const list = boardLists[index + 1]; // next card
-            const resPostCard = yield (0, card_repo_1.postCardAttachment)(card.id, {
+            const resPostCard = yield (0, card_repo_1.postCardComment)(card.id, {
                 name: commitMessage,
                 url: (0, utils_2.populateCommitUrl)({
                     owner,
@@ -437,11 +436,7 @@ function default_1() {
                 models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
             if (!lists.includes(currentCardListPosition.name))
                 models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
-            const index = (0, utils_1.getListIndex)(boardLists, currentCardListPosition.name);
-            if (!index)
-                models_1.c.setFailed("Oops! Cannot find card in the list.");
-            const list = boardLists[index + 1]; // next card
-            const resPostCard = yield (0, card_repo_1.postCardAttachment)(card.id, {
+            const resPostCard = yield (0, card_repo_1.postCardComment)(card.id, {
                 name: commitMessage,
                 url: (0, utils_1.populateCommitUrl)({
                     owner,

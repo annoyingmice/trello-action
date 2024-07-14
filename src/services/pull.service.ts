@@ -13,7 +13,7 @@ import {
     getBoardLists, 
     getCardFromBoardByNumber 
 } from "../repositories/board.repo";
-import { getTheListACardIsIn, postCardAttachment, putCard } from "../repositories/card.repo";
+import { getTheListACardIsIn, postCardComment, putCard } from "../repositories/card.repo";
 import { 
     context, 
     getListIndex, 
@@ -58,7 +58,7 @@ export default async function () {
         if(!index) c.setFailed("Oops! Cannot find card in the list.");
         const list = boardLists[index+1]; // next card
 
-        const resPostCard = await postCardAttachment(
+        const resPostCard = await postCardComment(
             card.id,
             {
                 name: commitMessage,

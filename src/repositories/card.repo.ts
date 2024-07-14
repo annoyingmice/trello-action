@@ -56,4 +56,4 @@ export const postCardComment = async (id: TrelloID, payload: Card.AttachMent) =>
         {
             text: String(`[${payload.url}] ${payload.name}`)
         }
-    ).catch(error => c.setFailed(error));
+    );
