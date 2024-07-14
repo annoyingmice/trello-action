@@ -345,7 +345,7 @@ function default_1() {
             });
             const commitMessage = commits.data[commits.data.length - 1].commit.message;
             const board = (yield (0, board_repo_1.getBoard)()).data;
-            const cardNumber = (0, utils_2.getCardNumber)(commitMessage);
+            const cardNumber = (0, utils_2.getCardNumber)(models_1.git.context.ref.replace('refs/heads/', ''));
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
             const repo = (0, utils_2.getRepository)();
             const owner = (0, utils_2.getRepositoryOwner)();
@@ -365,7 +365,7 @@ function default_1() {
             if (!index)
                 models_1.c.setFailed("Oops! Cannot find card in the list.");
             const list = boardLists[index + 1]; // next card
-            yield (0, card_repo_1.postCardAttachment)(card.id, {
+            const resPostCard = yield (0, card_repo_1.postCardAttachment)(card.id, {
                 name: commitMessage,
                 url: (0, utils_2.populateCommitUrl)({
                     owner,
@@ -373,12 +373,19 @@ function default_1() {
                     hash,
                 })
             });
+            if (resPostCard.status == 400) {
+                throw new Error(resPostCard.data);
+            }
             const res = yield (0, card_repo_1.putCard)(card.id, {
                 idList: list.id,
             });
+            if (res.status == 400) {
+                throw new Error(res.data);
+            }
             models_1.c.setOutput('statusCode', res.status);
         }
         catch (err) {
+            console.log('Error: ', JSON.stringify(err));
             models_1.c.setFailed(err);
         }
     });
@@ -411,7 +418,7 @@ function default_1() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const board = (yield (0, board_repo_1.getBoard)()).data;
-            const cardNumber = (0, utils_1.getCardNumber)(utils_1.context.payload.head_commit.message);
+            const cardNumber = (0, utils_1.getCardNumber)(models_1.git.context.ref.replace('refs/heads/', ''));
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
             const currentCardListPosition = (yield (0, card_repo_1.getTheListACardIsIn)(card.id)).data;
             const boardLists = (yield (0, board_repo_1.getBoardLists)()).data;
@@ -428,7 +435,7 @@ function default_1() {
                 models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
             if (!lists.includes(currentCardListPosition.name))
                 models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
-            const res = yield (0, card_repo_1.postCardAttachment)(card.id, {
+            const resPostCard = yield (0, card_repo_1.postCardAttachment)(card.id, {
                 name: commitMessage,
                 url: (0, utils_1.populateCommitUrl)({
                     owner,
@@ -436,9 +443,13 @@ function default_1() {
                     hash,
                 })
             });
-            models_1.c.setOutput('statusCode', res.status);
+            if (resPostCard.status == 400) {
+                throw new Error(resPostCard.data);
+            }
+            models_1.c.setOutput('statusCode', resPostCard.status);
         }
         catch (err) {
+            console.log('Error: ', JSON.stringify(err));
             models_1.c.setFailed(err);
         }
     });
@@ -465,7 +476,7 @@ exports.context = models_1.git.context;
 exports.octokit = new models_2.octo.Octokit({ request: { fetch: node_fetch_1.default }, auth: models_2.GH_TOKEN });
 const getCommitMessage = () => exports.context.payload.head_commit.message;
 exports.getCommitMessage = getCommitMessage;
-const getCardNumber = (commit) => { var _a, _b; return ((_b = (_a = commit === null || commit === void 0 ? void 0 : commit.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : -1); };
+const getCardNumber = (payload) => { var _a, _b; return ((_b = (_a = payload === null || payload === void 0 ? void 0 : payload.match(/\d+/g)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : -1); };
 exports.getCardNumber = getCardNumber;
 const getActionType = () => exports.context.payload.action;
 exports.getActionType = getActionType;

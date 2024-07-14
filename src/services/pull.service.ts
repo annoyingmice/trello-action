@@ -57,7 +57,7 @@ export default async function () {
         if(!index) c.setFailed("Oops! Cannot find card in the list.");
         const list = boardLists[index+1]; // next card
 
-        await postCardAttachment(
+        const resPostCard = await postCardAttachment(
             card.id,
             {
                 name: commitMessage,
@@ -69,6 +69,10 @@ export default async function () {
             }
         );
 
+        if(resPostCard.status == 400) {
+            throw new Error(resPostCard.data);
+        }
+
         const res = await putCard(
             card.id,
             {
@@ -76,10 +80,14 @@ export default async function () {
             }
         );
 
+        if(res.status == 400) {
+            throw new Error(res.data);
+        }
+
         c.setOutput('statusCode', res.status);
 
     } catch (err) {
-        console.log(JSON.stringify(err));
+        console.log('Error: ', JSON.stringify(err));
         c.setFailed(err as Error);
     }
 }

@@ -43,7 +43,7 @@ export default async function () {
         if(boardLists.length !== lists.length) c.setFailed("Oops! Boards in .yml and trello mismatch.")
         if(!lists.includes(currentCardListPosition.name)) c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
 
-        const res = await postCardAttachment(
+        const resPostCard = await postCardAttachment(
             card.id,
             {
                 name: commitMessage,
@@ -55,10 +55,14 @@ export default async function () {
             }
         );
 
-        c.setOutput('statusCode', res.status);
+        if(resPostCard.status == 400) {
+            throw new Error(resPostCard.data);
+        }
+
+        c.setOutput('statusCode', resPostCard.status);
 
     } catch (err) {
-        console.log(JSON.stringify(err));
+        console.log('Error: ', JSON.stringify(err));
         c.setFailed(err as Error);
     }
 }
