@@ -70,6 +70,8 @@ export default async function () {
             }
         );
 
+        console.log(JSON.stringify(list));
+
         if(resPostCard.status != 200) {
             throw new Error(resPostCard.data);
         }

@@ -373,6 +373,7 @@ function default_1() {
                     hash,
                 })
             });
+            console.log(JSON.stringify(list));
             if (resPostCard.status != 200) {
                 throw new Error(resPostCard.data);
             }
