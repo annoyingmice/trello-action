@@ -37,7 +37,8 @@ export default async function () {
             pr_number:  context.payload.pull_request?.number,
         });
         
-        const branch                    = git.context.payload.pull_request?.head.ref;
+        const pull_request              = git.context.payload.pull_request;
+        const branch                    = pull_request?.head.ref;
         const commitMessage             = commits.data[commits.data.length-1].commit.message;
         const board                     = (await getBoard()).data as Board.Model;
         const cardNumber                = getCardNumber(branch);
@@ -69,8 +70,6 @@ export default async function () {
                 })
             }
         );
-
-        console.log(JSON.stringify(list));
 
         if(resPostCard.status != 200) {
             throw new Error(resPostCard.data);
