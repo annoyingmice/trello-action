@@ -7,7 +7,6 @@ import {
     getRepositoryOwner, 
     populateCommitUrl,
     getListIndex,
-    isMain
 } from "../utils";
 import { 
     getBoard, 
@@ -17,7 +16,6 @@ import {
 import { 
     getTheListACardIsIn, 
     postCardAttachment,
-    putCard
 } from "../repositories/card.repo";
 import { 
     Board, 
@@ -64,21 +62,6 @@ export default async function () {
 
         if(resPostCard.status == 400) {
             throw new Error(resPostCard.data);
-        }
-
-        if(isMain(branch)) {
-            return c.setOutput('statusCode', resPostCard.status);
-        }
-
-        const res = await putCard(
-            card.id,
-            {
-                idList: list.id,
-            }
-        );
-
-        if(res.status == 400) {
-            throw new Error(res.data);
         }
 
         c.setOutput('statusCode', resPostCard.status);

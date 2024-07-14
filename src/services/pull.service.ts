@@ -36,10 +36,11 @@ export default async function () {
             repo:       getRepository(),
             pr_number:  context.payload.pull_request?.number,
         });
-
+        
+        const branch                    = git.context.ref.replace('refs/heads/', '');
         const commitMessage             = commits.data[commits.data.length-1].commit.message;
         const board                     = (await getBoard()).data as Board.Model;
-        const cardNumber                = getCardNumber(git.context.ref.replace('refs/heads/', ''));
+        const cardNumber                = getCardNumber(branch);
         const card                      = (await getCardFromBoardByNumber(cardNumber)).data as Card.Model;
         const repo                      = getRepository();
         const owner                     = getRepositoryOwner();

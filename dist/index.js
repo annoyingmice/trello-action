@@ -343,9 +343,10 @@ function default_1() {
                 repo: (0, utils_2.getRepository)(),
                 pr_number: (_a = utils_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number,
             });
+            const branch = models_1.git.context.ref.replace('refs/heads/', '');
             const commitMessage = commits.data[commits.data.length - 1].commit.message;
             const board = (yield (0, board_repo_1.getBoard)()).data;
-            const cardNumber = (0, utils_2.getCardNumber)(models_1.git.context.ref.replace('refs/heads/', ''));
+            const cardNumber = (0, utils_2.getCardNumber)(branch);
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
             const repo = (0, utils_2.getRepository)();
             const owner = (0, utils_2.getRepositoryOwner)();
@@ -450,15 +451,6 @@ function default_1() {
             });
             if (resPostCard.status == 400) {
                 throw new Error(resPostCard.data);
-            }
-            if ((0, utils_1.isMain)(branch)) {
-                return models_1.c.setOutput('statusCode', resPostCard.status);
-            }
-            const res = yield (0, card_repo_1.putCard)(card.id, {
-                idList: list.id,
-            });
-            if (res.status == 400) {
-                throw new Error(res.data);
             }
             models_1.c.setOutput('statusCode', resPostCard.status);
         }
