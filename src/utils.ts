@@ -25,3 +25,4 @@ export const getDefaultBranch   = (): Readonly<string> => <string>context.payloa
 export const getLists           = (): Readonly<string[]> => TR_LISTS.split(',');
 export const populateCommitUrl  = (payload: any): Readonly<string> => `https://github.com/${payload.owner}/${payload.repo}/commit/${payload.hash}`;
 export const getListIndex       = (lists: any[], target: string): Readonly<number> => lists.map(item => item.name).indexOf(target);
+export const isMain             = (target: string): Readonly<boolean> => /^main\b/.test(target);

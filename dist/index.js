@@ -417,8 +417,9 @@ const models_1 = __nccwpck_require__(3513);
 function default_1() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const branch = models_1.git.context.ref.replace('refs/heads/', '');
             const board = (yield (0, board_repo_1.getBoard)()).data;
-            const cardNumber = (0, utils_1.getCardNumber)(models_1.git.context.ref.replace('refs/heads/', ''));
+            const cardNumber = (0, utils_1.getCardNumber)(branch);
             const card = (yield (0, board_repo_1.getCardFromBoardByNumber)(cardNumber)).data;
             const currentCardListPosition = (yield (0, card_repo_1.getTheListACardIsIn)(card.id)).data;
             const boardLists = (yield (0, board_repo_1.getBoardLists)()).data;
@@ -435,6 +436,10 @@ function default_1() {
                 models_1.c.setFailed("Oops! Boards in .yml and trello mismatch.");
             if (!lists.includes(currentCardListPosition.name))
                 models_1.c.setFailed("Oops! Make sure you listed all the lists in your .yml config.");
+            const index = (0, utils_1.getListIndex)(boardLists, currentCardListPosition.name);
+            if (!index)
+                models_1.c.setFailed("Oops! Cannot find card in the list.");
+            const list = boardLists[index + 1]; // next card
             const resPostCard = yield (0, card_repo_1.postCardAttachment)(card.id, {
                 name: commitMessage,
                 url: (0, utils_1.populateCommitUrl)({
@@ -445,6 +450,15 @@ function default_1() {
             });
             if (resPostCard.status == 400) {
                 throw new Error(resPostCard.data);
+            }
+            if ((0, utils_1.isMain)(branch)) {
+                return models_1.c.setOutput('statusCode', resPostCard.status);
+            }
+            const res = yield (0, card_repo_1.putCard)(card.id, {
+                idList: list.id,
+            });
+            if (res.status == 400) {
+                throw new Error(res.data);
             }
             models_1.c.setOutput('statusCode', resPostCard.status);
         }
@@ -468,7 +482,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
+exports.isMain = exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
 const models_1 = __nccwpck_require__(3513);
 const models_2 = __nccwpck_require__(3513);
 const node_fetch_1 = __importDefault(__nccwpck_require__(4429));
@@ -502,6 +516,8 @@ const populateCommitUrl = (payload) => `https://github.com/${payload.owner}/${pa
 exports.populateCommitUrl = populateCommitUrl;
 const getListIndex = (lists, target) => lists.map(item => item.name).indexOf(target);
 exports.getListIndex = getListIndex;
+const isMain = (target) => /^main\b/.test(target);
+exports.isMain = isMain;
 
 
 /***/ }),
@@ -11979,7 +11995,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
+exports.isMain = exports.getListIndex = exports.populateCommitUrl = exports.getLists = exports.getDefaultBranch = exports.getIssueComment = exports.getIssue = exports.getReviewComments = exports.getCommitHash = exports.getRepositoryOwner = exports.getRepository = exports.getOwner = exports.getActionType = exports.getCardNumber = exports.getCommitMessage = exports.octokit = exports.context = void 0;
 const models_1 = __nccwpck_require__(2859);
 const models_2 = __nccwpck_require__(2859);
 const node_fetch_1 = __importDefault(__nccwpck_require__(4429));
@@ -12013,6 +12029,8 @@ const populateCommitUrl = (payload) => `https://github.com/${payload.owner}/${pa
 exports.populateCommitUrl = populateCommitUrl;
 const getListIndex = (lists, target) => lists.map(item => item.name).indexOf(target);
 exports.getListIndex = getListIndex;
+const isMain = (target) => /^main\b/.test(target);
+exports.isMain = isMain;
 
 
 /***/ }),
